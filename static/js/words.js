@@ -160,10 +160,16 @@ function getSessionWords(subsection, lang = "en", speaker = "") {
   if (subsection < 1 || subsection > NUM_SUBSECTIONS) {
     throw new RangeError(`subsection must be 1–${NUM_SUBSECTIONS}`);
   }
-  const col  = getColOrder(lang, speaker)[subsection - 1];
-  const data = WORD_DATA[lang] || WORD_DATA.en;
-  return data.map((_, rowIdx) =>
-    `set${String(rowIdx + 1).padStart(2, "0")}_col${String(col).padStart(2, "0")}`
+  const col   = getColOrder(lang, speaker)[subsection - 1];
+  const data  = WORD_DATA[lang] || WORD_DATA.en;
+  // Shuffle set order so the first word isn't always from set01
+  const rows  = Array.from({ length: data.length }, (_, i) => i + 1);
+  for (let i = rows.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rows[i], rows[j]] = [rows[j], rows[i]];
+  }
+  return rows.map(rowNum =>
+    `set${String(rowNum).padStart(2, "0")}_col${String(col).padStart(2, "0")}`
   );
 }
 
