@@ -1,22 +1,43 @@
 /**
  * words.js — Multi-language word list data and selection helpers.
  *
- * Sources:
- *   English: Multilingual Intelligibility Test, English Version
- *   Korean:  Multilingual Intelligibility Test, Korean Version
- *
- * Both lists: 50 sets × 12 words = 600 words per language.
+ * Languages (50 sets × 12 words = 600 total, except Arabic: 60 sets × 10 words):
+ *   English (en), Korean (ko), French (fr), German (de), Spanish (es),
+ *   Finnish (fi), Swedish (sv), Estonian (et), Danish (da),
+ *   Hindi (hi), Russian (ru), Arabic (ar)
  *
  * WORD_DATA[lang][rowIndex][colIndex]   (row/col both 0-based)
+ * LANG_CONFIG[lang]                     { numSets, numSubsections }
  * LANGUAGES                             { code → display label }
- * getSessionWords(subsection, lang)     subsection is 1-based (1–12)
+ * getLangConfig(lang)                   returns config for a language
+ * getSessionWords(subsection, lang, speaker)
  * getCanonical(wordId, lang)            wordId format: "set01_col03"
  */
 
 const LANGUAGES = {
   en: "English",
   ko: "Korean",
+  fr: "French",
+  de: "German",
+  es: "Spanish",
+  fi: "Finnish",
+  sv: "Swedish",
+  et: "Estonian",
+  da: "Danish",
+  hi: "Hindi",
+  ru: "Russian",
+  ar: "Arabic",
 };
+
+// Per-language configuration. Default: 50 sets × 12 subsections.
+// Arabic is special: 60 sets × 10 subsections.
+const LANG_CONFIG = {
+  ar: { numSets: 60, numSubsections: 10 },
+};
+
+function getLangConfig(lang) {
+  return LANG_CONFIG[lang] || { numSets: 50, numSubsections: 12 };
+}
 
 const WORD_DATA = {
 
@@ -126,22 +147,562 @@ const WORD_DATA = {
     /* set 50 */ ["기도","기소","기호","기조","기로","기초","기포","지로","지조","진로","지도","기로"],
   ],
 
-};
+  fr: [
+    /* set 01 */ ["pain", "plain", "paire", "terre", "palme", "palpe", "train", "faire", "vain", "traite", "traire", "plaire"],
+    /* set 02 */ ["baisse", "caisse", "casse", "calme", "alme", "campe", "crampe", "lampe", "plan", "craint", "rampe", "saint"],
+    /* set 03 */ ["larme", "lard", "tard", "arme", "arc", "parc", "parme", "par", "tas", "pas", "as", "la"],
+    /* set 04 */ ["lac", "croq", "craque", "sac", "trac", "coq", "choque", "bec", "raque", "chaque", "cheque", "sec"],
+    /* set 05 */ ["drap", "va", "race", "trace", "grâce", "tresse", "graisse", "grosse", "glace", "drame", "gramme", "gamme"],
+    /* set 06 */ ["rang", "frais", "lait", "freine", "seine", "reine", "si", "ni", "pie", "cri", "sang", "signe"],
+    /* set 07 */ ["bague", "blague", "vague", "bogue", "drôgue", "drague", "vos", "vogue", "vote", "vite", "visse", "vide"],
+    /* set 08 */ ["huit", "huile", "suite", "dites", "quitte", "suisse", "dix", "tuile", "cille", "hôte", "misse", "plisse"],
+    /* set 09 */ ["poil", "toile", "poigne", "voile", "ville", "mille", "fil", "fol", "mol", "vol", "point", "joint"],
+    /* set 10 */ ["ceux", "mieux", "ciel", "feu", "peu", "pneu", "pieu", "sure", "paix", "pure", "fais", "miel"],
+    /* set 11 */ ["foi", "coiffe", "soi", "soif", "soir", "noir", "soeur", "fou", "mou", "moi", "froid", "foire"],
+    /* set 12 */ ["bouche", "douche", "mouche", "boude", "boue", "joue", "fard", "doux", "jour", "four", "fer", "dure"],
+    /* set 13 */ ["pelle", "telle", "fêle", "frêle", "bosse", "laisse", "botte", "lotte", "cesse", "caisse", "baisse", "laite"],
+    /* set 14 */ ["belle", "bol", "balle", "salle", "sel", "sol", "val", "pâle", "mal", "mat", "mais", "vais"],
+    /* set 15 */ ["pont", "on", "font", "vont", "peine", "feinte", "fente", "pain", "peinte", "vin", "an", "en"],
+    /* set 16 */ ["clé", "blé", "bleu", "pleut", "pleure", "des", "dont", "nez", "non", "nain", "bain", "plain"],
+    /* set 17 */ ["choix", "croix", "croire", "gloire", "fois", "bois", "boite", "droite", "chez", "chère", "père", "pois"],
+    /* set 18 */ ["homme", "âme", "pomme", "somme", "dame", "lame", "flame", "flaque", "lave", "brave", "brame", "branche"],
+    /* set 19 */ ["eau", "beau", "bas", "veau", "vas", "vie", "vif", "qui", "quip", "classe", "chasse", "grasse"],
+    /* set 20 */ ["lire", "cuir", "fuire", "frire", "frite", "cuite", "cuise", "quoi", "pois", "ploie", "loi", "voix"],
+    /* set 21 */ ["haine", "âne", "flâne", "graine", "reine", "chaîne", "cheque", "chaque", "bac", "bâche", "vache", "vaste"],
+    /* set 22 */ ["air", "mer", "clair", "clerc", "thé", "près", "frais", "née", "nie", "lui", "bouille", "oui"],
+    /* set 23 */ ["chose", "chaud", "rose", "rote", "pose", "pèse", "thèse", "ère", "or", "frère", "gère", "verre"],
+    /* set 24 */ ["sage", "stage", "cage", "cache", "tache", "coche", "cloche", "poche", "proche", "pioche", "prompt", "rompte"],
+    /* set 25 */ ["chic", "pic", "flic", "tic", "toque", "froc", "bloque", "moque", "cloque", "claque", "vaque", "clan"],
+    /* set 26 */ ["êtes", "bête", "fête", "prête", "tête", "cette", "sexe", "vexe", "sèche", "flèche", "pêche", "lèche"],
+    /* set 27 */ ["anse", "ans", "chance", "champs", "sans", "dans", "flan", "ban", "danse", "blanc", "franc", "banc"],
+    /* set 28 */ ["norme", "forme", "dorme", "dort", "dos", "lors", "lorsque", "sors", "sorte", "sport", "port", "hors"],
+    /* set 29 */ ["coule", "coup", "poulpe", "poule", "boule", "soûle", "seule", "sourd", "gourd", "lourd", "meule", "veule"],
+    /* set 30 */ ["ais", "raye", "sais", "aise", "brais", "braise", "alpe", "scalpe", "apte", "capte", "scande", "quand"],
+    /* set 31 */ ["plaise", "fraise", "glaise", "base", "baise", "taise", "tasse", "classe", "chasse", "crasse", "basse", "masse"],
+    /* set 32 */ ["art", "gare", "quart", "carte", "charte", "tarte", "parte", "carne", "darne", "charme", "charge", "large"],
+    /* set 33 */ ["hanche", "ange", "range", "frange", "franche", "flanche", "change", "mange", "mince", "prince", "pince", "rince"],
+    /* set 34 */ ["saute", "faute", "haute", "hausse", "fausse", "gausse", "gosse", "gauche", "fauche", "fosse", "bosse", "brosse"],
+    /* set 35 */ ["tôt", "dos", "pot", "pote", "lot", "flot", "mot", "mort", "tort", "clore", "cor", "corne"],
+    /* set 36 */ ["toute", "goûte", "doute", "route", "rue", "ruche", "tue", "touche", "cruche", "louche", "loue", "cru"],
+    /* set 37 */ ["une", "lune", "brune", "brume", "prune", "fume", "plume", "rhume", "rouge", "rousse", "rouille", "fouille"],
+    /* set 38 */ ["prouve", "trouve", "trou", "proue", "cloue", "doue", "douce", "pouce", "sou", "souche", "flou", "chou"],
+    /* set 39 */ ["monte", "honte", "conte", "conge", "plonge", "longe", "ronge", "rase", "phase", "vase", "case", "cause"],
+    /* set 40 */ ["les", "ces", "paix", "paisse", "laisse", "lisse", "liste", "hisse", "crisse", "crise", "christ", "triste"],
+    /* set 41 */ ["lis", "bris", "cris", "gris", "grippe", "pris", "prise", "cuise", "cuit", "fruit", "frit", "frise"],
+    /* set 42 */ ["joie", "roi", "toi", "noix", "nuit", "dit", "rit", "rite", "site", "ciste", "mythe", "mis"],
+    /* set 43 */ ["monde", "mont", "fonde", "front", "sont", "seau", "soin", "faut", "sonde", "ronde", "blonde", "coin"],
+    /* set 44 */ ["test", "est", "ouest", "reste", "geste", "jette", "mette", "quête", "quelle", "elles", "ils", "file"],
+    /* set 45 */ ["guerre", "serre", "serve", "hier", "bière", "bielle", "fière", "fiel", "prière", "aile", "prêle", "stèle"],
+    /* set 46 */ ["roule", "moule", "mouille", "foule", "fuit", "suis", "bruit", "brûle", "nulle", "bulle", "nous", "sous"],
+    /* set 47 */ ["bu", "plu", "lu", "lutte", "août", "coût", "goût", "couvre", "ouvre", "coudre", "court", "tour"],
+    /* set 48 */ ["mûr", "cure", "pur", "purge", "pus", "vu", "puce", "suce", "sud", "plus", "pulpe", "jus"],
+    /* set 49 */ ["beurre", "coeur", "meure", "heure", "fleure", "fleuve", "meuve", "veuve", "veuf", "neuf", "oeuf", "eux"],
+    /* set 50 */ ["prend", "rend", "fend", "pend", "penche", "pense", "pente", "vente", "vend", "trente", "tente", "lente"]
+  ],
 
-const NUM_SETS        = WORD_DATA.en.length;          // 50
-const NUM_SUBSECTIONS = WORD_DATA.en[0].length;       // 12
+  de: [
+    /* set 01 */ ["an", "dann", "Mann", "am", "Amt", "samt", "satt", "hat", "Hang", "Strang", "streng", "eng"],
+    /* set 02 */ ["Akt", "alt", "als", "falls", "Fang", "fing", "Ding", "dick", "Trick", "Trip", "wipp", "Wind"],
+    /* set 03 */ ["arg", "Arm", "Art", "Bart", "Bahn", "Wahn", "wagt", "sagt", "Saat", "scharrt", "schab", "hab"],
+    /* set 04 */ ["auch", "Bauch", "tauch", "tauf", "tief", "Tier", "Bier", "bieg", "lieg", "lies", "fies", "viel"],
+    /* set 05 */ ["Bank", "krank", "Tank", "Takt", "packt", "Pass", "Bass", "back", "hack", "Hast", "Gast", "Gans"],
+    /* set 06 */ ["Bau", "grau", "bei", "beisst", "Biest", "niesst", "nie", "flieh", "Floh", "Floss", "Kloss", "trau"],
+    /* set 07 */ ["bin", "bis", "riss", "Reis", "reich", "Teich", "Tuch", "Buch", "Bach", "Bann", "wann", "Bild"],
+    /* set 08 */ ["Teil", "Beil", "Keil", "Bein", "toll", "voll", "fahl", "Schal", "Scham", "warm", "Wald", "bald"],
+    /* set 09 */ ["Sinn", "hin", "Kinn", "kipp", "Tip", "Hirn", "Hohn", "Lohn", "Lob", "grob", "gross", "Moos"],
+    /* set 10 */ ["Krach", "krass", "Kraft", "Dach", "dich", "wich", "will", "still", "stimm", "schlimm", "Schlick", "Schluck"],
+    /* set 11 */ ["Hand", "Land", "schwand", "Hund", "lang", "Klang", "kling", "klirr", "klaer", "Wehr", "wert", "Schwert"],
+    /* set 12 */ ["fest", "Test", "Rest", "fast", "Feld", "Geld", "gern", "Stern", "stell", "hell", "Hemd", "kaemmt"],
+    /* set 13 */ ["Blatt", "glatt", "platt", "Platz", "Satz", "Sand", "Rand", "Rang", "Gang", "ganz", "Kranz", "krallt"],
+    /* set 14 */ ["Kahn", "Zahn", "zahm", "zart", "hart", "Herd", "leert", "lebt", "schwebt", "schwer", "Baer", "bebt"],
+    /* set 15 */ ["Maus", "krauss", "Graus", "Gries", "schliess", "schlief", "schief", "scheib", "lieb", "Lied", "sieht", "Sieg"],
+    /* set 16 */ ["vor", "Chor", "Tor", "Tuer", "spuer", "spuel", "fuehl", "fueg", "lueg", "leg", "Weg", "wen"],
+    /* set 17 */ ["Licht", "Sicht", "nicht", "Nacht", "lacht", "Lamm", "klamm", "klatsch", "Matsch", "mag", "frag", "Fracht"],
+    /* set 18 */ ["Saal", "kahl", "Stahl", "starb", "gab", "Gas", "blas", "blass", "Fass", "fand", "Wand", "wach"],
+    /* set 19 */ ["Schwamm", "schwaemm", "schwimm", "nimm", "nick", "pick", "Pilz", "schmilz", "schmink", "trink", "trifft", "Schift"],
+    /* set 20 */ ["Stein", "klein", "Schwein", "Schweiss", "heiss", "Heim", "Reim", "reit", "breit", "Brei", "Ei", "Eis"],
+    /* set 21 */ ["thront", "lohnt", "schont", "schor", "Rohr", "rot", "tot", "Ton", "wohn", "wo", "Ohr", "Uhr"],
+    /* set 22 */ ["Schopf", "Topf", "Kopf", "Koch", "Loch", "lock", "Schock", "schoss", "Schuss", "Bus", "bunt", "Mund"],
+    /* set 23 */ ["fang", "Drang", "schlang", "schlaff", "raff", "rasch", "wasch", "Wald", "kalt", "kann", "ran", "Rast"],
+    /* set 24 */ ["Braut", "Kraut", "laut", "Lauf", "sauf", "Saum", "Baum", "Bausch", "Rausch", "rauh", "Tau", "taub"],
+    /* set 25 */ ["Pracht", "kracht", "wacht", "Wachs", "Dachs", "darf", "scharf", "Schacht", "Schicht", "bricht", "bring", "sing"],
+    /* set 26 */ ["Joch", "doch", "roch", "roll", "soll", "suhl", "Sud", "Hut", "Huhn", "tun", "Tour", "Flur"],
+    /* set 27 */ ["Park", "stark", "Mark", "merk", "Werk", "wenn", "renn", "Recht", "schlecht", "schlemmt", "hemmt", "haeng"],
+    /* set 28 */ ["huell", "knuell", "fuell", "fiel", "Vieh", "Knie", "kniet", "briet", "Brief", "lief", "liest", "giesst"],
+    /* set 29 */ ["fuer", "ruehr", "Kuer", "kuehn", "gruen", "gruesst", "suesst", "siehst", "fliesst", "flieg", "schwieg", "Krieg"],
+    /* set 30 */ ["See", "Schnee", "geh", "saeg", "Steg", "stieg", "wieg", "wag", "Wahl", "Strahl", "straf", "straff"],
+    /* set 31 */ ["steht", "geht", "Beet", "Bett", "nett", "Nest", "Pest", "Pelz", "schmelz", "schmeckt", "leckt", "laesst"],
+    /* set 32 */ ["kroen", "schoen", "stoehn", "stoer", "hoer", "Haar", "Paar", "per", "Pech", "raech", "rechts", "kraechz"],
+    /* set 33 */ ["Korn", "Zorn", "Dorn", "Zopf", "stopf", "Kropf", "kroch", "kross", "goss", "Gold", "sollt", "sorgt"],
+    /* set 34 */ ["bog", "bot", "bohr", "Moor", "Mond", "wohnt", "wohl", "hohl", "hob", "tob", "Tod", "Brot"],
+    /* set 35 */ ["faellt", "Held", "Welt", "wild", "mild", "mix", "Tricks", "trist", "bist", "bind", "Kind", "koennt"],
+    /* set 36 */ ["Schatz", "Latz", "Spatz", "spitz", "Witz", "Wicht", "schlicht", "schliff", "Schlaf", "schlag", "Tag", "Tat"],
+    /* set 37 */ ["Ball", "Stall", "fall", "Stamm", "staemm", "klemm", "Klecks", "Schecks", "Chef", "Treff", "triff", "Tritt"],
+    /* set 38 */ ["wippt", "wird", "winkt", "stinkt", "Stift", "Gift", "Gischt", "fischt", "find", "sind", "send", "Sekt"],
+    /* set 39 */ ["schwarz", "Schwanz", "schwach", "lach", "Last", "passt", "pack", "Sack", "Saft", "schafft", "schallt", "wallt"],
+    /* set 40 */ ["Flug", "Flut", "flucht", "Flucht", "Fluss", "Kuss", "kurz", "Sturz", "stumm", "dumm", "Duft", "Luft"],
+    /* set 41 */ ["Strumpf", "dumpf", "Durst", "Wurst", "wund", "rund", "rutsch", "lutsch", "Lust", "Brust", "brumm", "summ"],
+    /* set 42 */ ["Druck", "Schmuck", "Ruck", "Rock", "hock", "hoff", "schroff", "Schrott", "Pott", "Post", "Rost", "rollt"],
+    /* set 43 */ ["Milch", "mischt", "Mist", "frisst", "frisch", "Tisch", "tick", "Strick", "streck", "Dreck", "schleck", "schlepp"],
+    /* set 44 */ ["zieh", "ziert", "Ziel", "schiel", "schiess", "Kies", "hiess", "Hieb", "Dieb", "dient", "dehnt", "traent"],
+    /* set 45 */ ["Seil", "seicht", "sein", "Wein", "weich", "Streich", "streif", "reif", "rein", "Schein", "Scheit", "leit"],
+    /* set 46 */ ["Freund", "freu", "true", "traeumt", "schaeumt", "scheut", "streut", "stritt", "strickt", "streckt", "weckt", "waelzt"],
+    /* set 47 */ ["Hals", "Haft", "Hass", "nass", "nackt", "knackt", "knallt", "galt", "gafft", "Garn", "warn", "wahr"],
+    /* set 48 */ ["Kleid", "Neid", "weit", "Weib", "Leib", "leicht", "schleicht", "schleiff", "greiff", "Griff", "Schiff", "schick"],
+    /* set 49 */ ["toest", "loest", "List", "misst", "mixt", "schickst", "Schild", "grillt", "grinst", "spinnst", "spick", "Blick"],
+    /* set 50 */ ["Markt", "Marsch", "malt", "zahlt", "zaehlt", "waehlt", "weh", "Klee", "kleb", "heb", "hegt", "saegt"]
+  ],
+
+  es: [
+    /* set 01 */ ["hago", "juego", "lago", "largo", "lengua", "luego", "mago", "ruego", "trago", "traigo", "trecho", "tregua"],
+    /* set 02 */ ["ciego", "ego", "fuego", "griego", "grueso", "guapo", "guardo", "miedo", "mudo", "niego", "riego", "suegro"],
+    /* set 03 */ ["cielo", "cierto", "dilo", "duelo", "hilo", "hueco", "huella", "huelo", "kilo", "suelo", "vuelo", "vuelto"],
+    /* set 04 */ ["cliente", "diente", "frente", "gente", "lenta", "lentes", "menta", "mente", "puente", "siente", "venta", "cuente"],
+    /* set 05 */ ["broche", "coche", "concha", "ducha", "eco", "hacha", "hecha", "lecho", "lucha", "noche", "pecho", "techo"],
+    /* set 06 */ ["alto", "arpa", "ata", "foto", "gata", "grata", "plata", "plato", "rata", "raya", "rota", "salto"],
+    /* set 07 */ ["calla", "cama", "gallo", "gramo", "halla", "hoyo", "llama", "playa", "pollo", "rama", "rayo", "vaya"],
+    /* set 08 */ ["ave", "cabe", "cable", "clave", "grave", "llave", "llueva", "mueva", "nave", "nueva", "prueba", "rabo"],
+    /* set 09 */ ["asa", "cargo", "casa", "casco", "caso", "cosa", "cuna", "paso", "peso", "preso", "queso", "vaso"],
+    /* set 10 */ ["clase", "fase", "flaco", "frasco", "frase", "fresa", "fresco", "mesa", "prenda", "prensa", "reza", "tensa"],
+    /* set 11 */ ["alma", "drama", "gana", "madre", "padre", "palma", "pata", "rana", "sana", "trama", "trampa", "trepa"],
+    /* set 12 */ ["boca", "coma", "foca", "foco", "loco", "poco", "roca", "tipo", "toco", "tomo", "topo", "torso"],
+    /* set 13 */ ["ando", "cubo", "dudo", "hubo", "humo", "curso", "mando", "mundo", "pudo", "puño", "sobra", "une"],
+    /* set 14 */ ["banda", "boda", "codo", "cupo", "fondo", "grado", "hada", "lodo", "cura", "moda", "modo", "soda"],
+    /* set 15 */ ["ajo", "caja", "ceja", "deja", "lejos", "lino", "lujo", "paja", "queja", "quema", "viajo", "viejo"],
+    /* set 16 */ ["alas", "balas", "balsa", "bolas", "bolsa", "botas", "botes", "colas", "jaulas", "olas", "solas", "soles"],
+    /* set 17 */ ["cresta", "cesta", "cuesta", "dedo", "duro", "fiesta", "presta", "puesta", "resta", "resto", "reto", "siesta"],
+    /* set 18 */ ["canto", "dueño", "lana", "llanta", "larva", "manga", "mango", "mano", "manto", "plano", "santo", "sueño"],
+    /* set 19 */ ["baja", "barra", "barro", "búho", "burro", "caña", "cera", "cero", "faja", "garra", "sala", "cerro"],
+    /* set 20 */ ["grande", "granja", "grasa", "gringo", "grito", "hambre", "hombre", "hombro", "mugre", "negro", "sangre", "sombra"],
+    /* set 21 */ ["gema", "genio", "medio", "mide", "miento", "mito", "pide", "pienso", "precio", "premio", "primo", "seda"],
+    /* set 22 */ ["faro", "lado", "libra", "libro", "lima", "lobo", "milla", "mira", "silla", "suma", "tira", "tiza"],
+    /* set 23 */ ["cobra", "corta", "costa", "fibra", "gorra", "huelga", "huerta", "nombra", "obra", "torna", "torta", "vibra"],
+    /* set 24 */ ["cava", "curvas", "goma", "gotas", "gustas", "horas", "rubio", "rumbo", "turbio", "vacas", "vara", "varias"],
+    /* set 25 */ ["chancho", "dama", "llanto", "malas", "pago", "papa", "rango", "rato", "tango", "tinta", "tonto", "vengo"],
+    /* set 26 */ ["cono", "firme", "forma", "fuerza", "fumo", "moco", "mono", "ocho", "ojo", "tiene", "tierno", "turno"],
+    /* set 27 */ ["cinta", "cita", "fijo", "hijo", "hizo", "hoja", "junta", "pinta", "punta", "punto", "quiso", "quinta"],
+    /* set 28 */ ["banco", "blanco", "brindo", "bueno", "cinco", "hipo", "lomo", "rindo", "sueno", "tono", "trono", "trueno"],
+    /* set 29 */ ["barca", "barco", "bata", "lata", "marca", "pato", "plomo", "pluma", "poste", "puerco", "puesto", "puma"],
+    /* set 30 */ ["canso", "cuerda", "cuero", "ganso", "muerte", "muerto", "pares", "parta", "pera", "perla", "puerto", "tarta"],
+    /* set 31 */ ["hable", "libre", "nube", "pobre", "porte", "potro", "sabe", "sable", "sapo", "sopla", "sube", "sopa"],
+    /* set 32 */ ["bicho", "chivo", "moho", "monta", "pila", "pino", "piso", "raja", "rico", "rojo", "toro", "vino"],
+    /* set 33 */ ["acto", "amo", "apto", "aro", "pacto", "paro", "pasta", "pasto", "rapto", "rastro", "rostro", "vago"],
+    /* set 34 */ ["celda", "cerca", "cerdo", "circo", "cuota", "dado", "dardo", "nado", "nata", "nota", "persa", "presa"],
+    /* set 35 */ ["calvo", "chico", "choca", "clavo", "lavo", "niña", "palco", "pica", "piña", "pipa", "saco", "salgo"],
+    /* set 36 */ ["capa", "cara", "porta", "carta", "causa", "claro", "lazo", "mapa", "rara", "raza", "taza", "trata"],
+    /* set 37 */ ["gasto", "gorro", "guerra", "hielo", "hierro", "masas", "palas", "palos", "pozo", "rasgo", "sierra", "tallas"],
+    /* set 38 */ ["bella", "beso", "falda", "falla", "falso", "falta", "gala", "salsa", "salva", "vela", "vello", "verso"],
+    /* set 39 */ ["abro", "cabo", "cabra", "carro", "cobre", "cubre", "grabo", "jala", "jarra", "tapa", "traba", "tropa"],
+    /* set 40 */ ["arco", "arde", "ares", "artes", "asco", "disco", "harto", "parque", "taco", "tacto", "tanque", "tarde"],
+    /* set 41 */ ["centro", "churro", "ciento", "cierro", "pierna", "pieza", "torpe", "truco", "tubo", "tumba", "turco", "tuve"],
+    /* set 42 */ ["dona", "doña", "fina", "finja", "lona", "luna", "luzca", "mula", "multa", "uña", "urna", "usa"],
+    /* set 43 */ ["ancho", "cancha", "caño", "ceño", "daño", "flecha", "gancho", "lancha", "mancha", "marcho", "panza", "plancha"],
+    /* set 44 */ ["floja", "flujo", "moja", "monje", "mosca", "ramo", "rampa", "reja", "remo", "trapo", "trigo", "tripa"],
+    /* set 45 */ ["fruta", "gripe", "grises", "grupo", "gruta", "misa", "risa", "rusa", "ruta", "villa", "vista", "visto"],
+    /* set 46 */ ["bobo", "chorro", "choza", "chupa", "doce", "domo", "dulce", "torre", "tose", "trece", "trenes", "trenzas"],
+    /* set 47 */ ["bronce", "brote", "calle", "labio", "lame", "lanza", "once", "pinza", "quince", "quinta", "sabio", "saque"],
+    /* set 48 */ ["brisa", "broma", "flama", "flanco", "flauta", "ropa", "ronca", "flota", "freno", "frito", "frota", "rosa"],
+    /* set 49 */ ["brillo", "crío", "días", "fío", "fríos", "grillo", "guías", "líos", "pío", "río", "tíos", "trío"],
+    /* set 50 */ ["chavo", "chelo", "chino", "cuello", "hueso", "huevo", "lleno", "lleva", "mato", "muerdo", "muero", "muro"]
+  ],
+
+  fi: [
+    /* set 01 */ ["ahne", "aine", "aines", "avain", "avoin", "mainos", "painos", "pallo", "pula", "pulla", "pullo", "pulma"],
+    /* set 02 */ ["purkaa", "puro", "purra", "ruoka", "ruska", "rusko", "suora", "surra", "taival", "taivas", "tuska", "usko"],
+    /* set 03 */ ["emo", "eno", "ero", "teos", "seos", "side", "sade", "kide", "säde", "eväs", "teräs", "eräs"],
+    /* set 04 */ ["kevyt", "kevät", "kuri", "koti", "korpi", "kori", "korko", "koko", "kokko", "koitos", "kiitos", "kulma"],
+    /* set 05 */ ["kumpi", "kumi", "julma", "kummi", "kuuma", "kuume", "juoma", "lumi", "pukki", "purkki", "vaara", "vaari"],
+    /* set 06 */ ["vaali", "valas", "vaja", "vala", "valaa", "vaje", "valli", "velli", "alas", "allas", "hoitaa", "posti"],
+    /* set 07 */ ["poistaa", "poisto", "hoito", "huivi", "huvi", "huono", "hame", "huone", "home", "pesti", "kaali", "kaari"],
+    /* set 08 */ ["maali", "kala", "kana", "kalja", "kalju", "saari", "hana", "saha", "sana", "sata", "haava", "kaava"],
+    /* set 09 */ ["haaste", "haave", "vanne", "kanne", "ranne", "rinne", "hanki", "vanha", "vanki", "vankka", "raivo", "kaivo"],
+    /* set 10 */ ["aivot", "toinen", "nainen", "nauha", "nuha", "nuori", "nuotti", "uhma", "uhka", "tuhka", "inho", "ilo"],
+    /* set 11 */ ["iho", "tori", "tosi", "torni", "tuore", "tuotto", "tuote", "kausi", "kuusi", "uusi", "suoli", "tuoli"],
+    /* set 12 */ ["tuuli", "tulla", "tulie", "tulli", "tuki", "tulkki", "tukku", "tukki", "puoli", "nuoli", "kuulla", "kuula"],
+    /* set 13 */ ["kuulo", "kuolla", "muusi", "muuri", "joulu", "koulu", "kulu", "kuru", "kuiva", "kulta", "laitta", "laiha"],
+    /* set 14 */ ["laina", "laine", "laita", "laiva", "lanka", "vaiva", "paita", "palo", "pata", "pato", "vara", "vatsa"],
+    /* set 15 */ ["varas", "varvas", "varma", "vasa", "vasta", "tili", "tilli", "tila", "sisko", "kisko", "näyttää", "käyttää"],
+    /* set 16 */ ["käänne", "näytös", "käytös", "käännös", "säännös", "näyttö", "täyttää", "käärme", "kukko", "kiekko", "liekki", "häkä"],
+    /* set 17 */ ["härkä", "häivä", "päivä", "vielä", "vähä", "häätää", "kylä", "hätä", "vähän", "väylä", "kieli", "kielto"],
+    /* set 18 */ ["kierto", "kotka", "koska", "koski", "mieli", "kohta", "kohtu", "kohu", "kohti", "soihtu", "tauti", "mahti"],
+    /* set 19 */ ["tähti", "halli", "lahti", "hurja", "harja", "sarja", "ralli", "marja", "lehto", "lehti", "laulu", "lenkki"],
+    /* set 20 */ ["leikki", "leiri", "lelu", "lievä", "levy", "levä", "kehto", "paisti", "paitsi", "paistaa", "aito", "taide"],
+    /* set 21 */ ["tiede", "tieto", "taito", "taitaa", "taittaa", "haastaa", "haistaa", "raskas", "rakas", "rikas", "voittaa", "soittaa"],
+    /* set 22 */ ["koota", "koittaa", "hissi", "hiki", "hirvi", "liki", "vitsi", "virsi", "virhe", "veitsi", "kaaos", "kaamos"],
+    /* set 23 */ ["käki", "käsi", "kärki", "väki", "järki", "järvi", "kerä", "erä", "lauta", "lautta", "laatta", "arka"],
+    /* set 24 */ ["akka", "arvo", "armo", "hylky", "hyöty", "hylly", "sakko", "pakko", "laki", "lakko", "lakki", "lahko"],
+    /* set 25 */ ["lampi", "lappu", "lamppu", "lempi", "latu", "laatu", "nimi", "niemi", "naru", "nauru", "pieni", "sieni"],
+    /* set 26 */ ["kiire", "kierre", "kirja", "kissa", "kirje", "kisa", "läpi", "lääni", "ääni", "ääri", "halpa", "harha"],
+    /* set 27 */ ["harmaa", "harmi", "harva", "hauta", "salpa", "veli", "keli", "veri", "vero", "vesi", "peli", "peili"],
+    /* set 28 */ ["keto", "veto", "meri", "verho", "kortti", "tasku", "lasku", "sotku", "polkka", "polku", "potku", "potti"],
+    /* set 29 */ ["portti", "poikki", "poika", "piikki", "sinä", "silli", "milli", "silti", "silta", "multa", "murhe", "murre"],
+    /* set 30 */ ["nostaa", "kostaa", "kosto", "ostaa", "suru", "kaste", "kate", "kato", "katse", "siivu", "sivu", "koppi"],
+    /* set 31 */ ["kuppi", "oppi", "onni", "sonni", "räntä", "ranta", "rampa", "kanta", "kansi", "kansa", "kanssa", "napa"],
+    /* set 32 */ ["tapa", "tuho", "taho", "teho", "pääsky", "pääsy", "pääty", "jatko", "jatkaa", "jaksaa", "jakso", "jano"],
+    /* set 33 */ ["jalo", "jakaa", "tiimi", "toimi", "tuoda", "juosta", "juoda", "juusto", "joustaa", "juuri", "kilpi", "kilpa"],
+    /* set 34 */ ["hohto", "johto", "viiri", "piina", "villi", "villa", "viisi", "viini", "viina", "muistaa", "muisti", "muisto"],
+    /* set 35 */ ["luistaa", "palaa", "pala", "salaa", "rauha", "lasti", "rapa", "raha", "rata", "rasti", "ratti", "asti"],
+    /* set 36 */ ["ryhmä", "tyhmä", "paine", "maine", "keppi", "kaappi", "nappi", "happi", "korppi", "puite", "puute", "jauho"],
+    /* set 37 */ ["jauhaa", "pettää", "peittää", "peitto", "pelkkä", "peto", "pelto", "pankki", "penkki", "poro", "piiri", "kehu"],
+    /* set 38 */ ["hiiri", "karja", "keho", "kehno", "rivi", "karva", "kasa", "kassi", "kassa", "kivi", "passi", "korva"],
+    /* set 39 */ ["kenkä", "kenttä", "kestää", "keittää", "keitto", "katto", "katko", "heittää", "ilma", "ilta", "ukko", "lukko"],
+    /* set 40 */ ["maasto", "mato", "matto", "maksu", "maksa", "luulla", "luuta", "paasto", "taksa", "tali", "talli", "talvi"],
+    /* set 41 */ ["solmu", "sopu", "solu", "sääli", "sääri", "suku", "puku", "luku", "sulku", "purku", "geeni", "treeni"],
+    /* set 42 */ ["vaate", "aate", "tahti", "heti", "hetki", "renki", "retki", "reitti", "henki", "lyhty", "lyhyt", "panna"],
+    /* set 43 */ ["pannu", "vuoka", "vuosi", "vuoro", "vuori", "vuokra", "vuoto", "viedä", "paalu", "rauta", "paluu", "routa"],
+    /* set 44 */ ["turha", "turta", "turva", "turve", "terve", "tulva", "tarve", "murha", "kova", "koura", "kovaa", "koira"],
+    /* set 45 */ ["oja", "oma", "olla", "teksti", "testi", "koru", "karu", "kuori", "kuoro", "kuva", "kurja", "loma"],
+    /* set 46 */ ["takia", "takoa", "takki", "tankki", "tiukka", "tappo", "tappaa", "happa", "taakka", "tarkka", "tahra", "tarha"],
+    /* set 47 */ ["riisi", "risti", "tukka", "rankka", "sankka", "satu", "savu", "sävy", "katu", "kriisi", "kukka", "sukka"],
+    /* set 48 */ ["mutka", "matka", "syödä", "syöpä", "sello", "sellu", "seula", "sielu", "kaula", "keula", "aula", "kello"],
+    /* set 49 */ ["taulu", "liha", "loppu", "lilja", "linja", "linna", "viha", "piha", "lippu", "luotto", "luonto", "minä"],
+    /* set 50 */ ["paha", "sora", "kirkko", "meikki", "kaato", "häät", "perho", "pha", "paheta", "vuotaa", "puoltaa", "jousta"]
+  ],
+
+  sv: [
+    /* set 01 */ ["sur", "mur", "sår", "får", "mår", "mås", "svår", "mus", "ås", "surr", "morr", "vår"],
+    /* set 02 */ ["stor", "borr", "mor", "skor", "mos", "små", "mål", "tvål", "tål", "torr", "knorr", "bor"],
+    /* set 03 */ ["gris", "kris", "is", "risk", "fisk", "list", "brist", "pisk", "sist", "stil", "ris", "stol"],
+    /* set 04 */ ["boll", "fall", "håll", "bål", "hål", "lån", "nål", "hån", "hall", "full", "lur", "bur"],
+    /* set 05 */ ["grop", "sop", "pool", "sol", "grupp", "gupp", "puss", "sluss", "ful", "ull", "mull", "grus"],
+    /* set 06 */ ["tror", "gror", "grå", "blå", "slår", "flår", "år", "bår", "står", "går", "ror", "tår"],
+    /* set 07 */ ["syr", "flyr", "styr", "for", "flyt", "flor", "myr", "dyr", "fyr", "hyr", "flyg", "yr"],
+    /* set 08 */ ["ser", "fler", "ber", "ger", "ler", "bar", "far", "skar", "rak", "brak", "kar", "rik"],
+    /* set 09 */ ["fil", "lik", "lin", "fin", "fri", "rim", "frid", "lim", "glad", "lass", "glass", "klass"],
+    /* set 10 */ ["hav", "gav", "har", "skarv", "arv", "larv", "varv", "var", "klar", "par", "rar", "snar"],
+    /* set 11 */ ["grön", "skön", "frön", "krön", "rön", "tös", "stön", "lös", "öst", "frös", "röst", "bröst"],
+    /* set 12 */ ["bok", "kok", "kock", "rock", "ork", "bock", "tork", "krock", "sork", "kork", "stork", "stark"],
+    /* set 13 */ ["hus", "bus", "snus", "buss", "just", "lust", "kust", "kust", "plus", "skur", "tur", "ur"],
+    /* set 14 */ ["häst", "bäst", "fest", "stel", "spett", "fel", "sett", "vett", "snett", "nytt", "prytt", "spel"],
+    /* set 15 */ ["jul", "kul", "gul", "krus", "brus", "blus", "gröt", "söt", "röt", "rött", "trött", "krass"],
+    /* set 16 */ ["ask", "mask", "slask", "vask", "skav", "lav", "slav", "slag", "vag", "dag", "trav", "svag"],
+    /* set 17 */ ["röd", "död", "bröd", "bred", "sned", "slev", "brev", "berg", "färg", "helg", "älg", "sälj"],
+    /* set 18 */ ["räv", "snäv", "stäv", "väv", "gräv", "värk", "kväv", "märk", "ärm", "skärm", "värm", "svärm"],
+    /* set 19 */ ["till", "vill", "sill", "dill", "pil", "spill", "sil", "stins", "stins", "sting", "kring", "ring"],
+    /* set 20 */ ["vas", "glas", "vass", "tass", "gles", "blad", "spad", "bad", "lag", "tag", "drag", "grad"],
+    /* set 21 */ ["kall", "mall", "stall", "tall", "lat", "stat", "stal", "kal", "smal", "ska", "bra", "dra"],
+    /* set 22 */ ["hår", "torv", "når", "korg", "norr", "kår", "korv", "skorv", "kors", "fors", "sorg", "torg"],
+    /* set 23 */ ["ägg", "vägg", "hägg", "skägg", "här", "svär", "vers", "väg", "rep", "knep", "är", "svep"],
+    /* set 24 */ ["klo", "sno", "kost", "ost", "prost", "rost", "post", "stop", "knop", "knopp", "lo", "sop"],
+    /* set 25 */ ["lus", "ljus", "snö", "tö", "slö", "läs", "ko", "sök", "lök", "rök", "krök", "krok"],
+    /* set 26 */ ["ram", "dam", "tam", "mark", "tsar", "kvar", "spar", "damm", "kvark", "kvart", "kvast", "spark"],
+    /* set 27 */ ["kål", "brås", "flås", "moll", "roll", "troll", "koll", "trål", "bås", "lås", "blås", "bloss"],
+    /* set 28 */ ["fat", "fatt", "tro", "trä", "knä", "ratt", "flat", "satt", "matt", "mat", "hat", "hatt"],
+    /* set 29 */ ["skål", "bal", "klas", "al", "dal", "ål", "snål", "vall", "skal", "kol", "mas", "gas"],
+    /* set 30 */ ["klok", "lok", "klick", "lack", "chock", "lock", "stock", "tack", "frack", "tok", "stick", "prick"],
+    /* set 31 */ ["fläkt", "spräckt", "släkt", "slick", "flykt", "dräkt", "fik", "fick", "knäckt", "vak", "vik", "sträckt"],
+    /* set 32 */ ["rask", "plask", "malm", "snask", "small", "skall", "alm", "kval", "palm", "sal", "tal", "kväll"],
+    /* set 33 */ ["spak", "däck", "svin", "vin", "min", "mil", "ting", "fräck", "spring", "spik", "späck", "knäck"],
+    /* set 34 */ ["ek", "lek", "stek", "hel", "plock", "el", "tjock", "tjat", "gnat", "prat", "flock", "fläck"],
+    /* set 35 */ ["duk", "sjuk", "sju", "fru", "rus", "mjuk", "rusk", "must", "du", "mast", "last", "rask"],
+    /* set 36 */ ["stad", "dugg", "svid", "vad", "drag", "dagg", "tig", "dryg", "tyg", "smyg", "hugg", "vig"],
+    /* set 37 */ ["tunn", "brunn", "brun", "mun", "fred", "spån", "spinn", "stinn", "skinn", "sked", "smed", "sken"],
+    /* set 38 */ ["björn", "hörn", "örn", "torn", "mött", "sött", "horn", "kött", "korn", "tak", "smak", "flak"],
+    /* set 39 */ ["skåp", "dråp", "hopp", "propp", "dropp", "drog", "slog", "krog", "plog", "volt", "valt", "vält"],
+    /* set 40 */ ["barn", "flarn", "mal", "lamm", "stamm", "kram", "sval", "man", "han", "kam", "kvarn", "val"],
+    /* set 41 */ ["ved", "råd", "svärd", "sed", "red", "rädd", "sedd", "skydd", "räd", "lärd", "brydd", "värd"],
+    /* set 42 */ ["papp", "napp", "knapp", "tapp", "tupp", "pamp", "slump", "topp", "kamp", "kupp", "pump", "lump"],
+    /* set 43 */ ["gräns", "gräs", "pjäs", "halv", "valv", "krav", "värv", "kärv", "kräv", "grav", "nerv", "kalv"],
+    /* set 44 */ ["not", "bård", "gård", "vård", "trut", "slut", "tjut", "hård", "nog", "skjut", "skog", "fog"],
+    /* set 45 */ ["öl", "köl", "knöt", "flöt", "flit", "föl", "svält", "fjäll", "fält", "tält", "stöt", "säll"],
+    /* set 46 */ ["börs", "törs", "rörs", "stör", "nyss", "för", "kryss", "ryss", "kör", "by", "bry", "kry"],
+    /* set 47 */ ["ton", "zon", "zoo", "don", "ord", "bord", "jord", "bank", "blank", "ro", "rank", "mord"],
+    /* set 48 */ ["besk", "träsk", "skär", "sky", "kyl", "läsk", "bär", "väl", "gräl", "själ", "själv", "kär"],
+    /* set 49 */ ["bön", "kön", "frän", "kråm", "kräm", "skänk", "län", "sänk", "hän", "bänk", "kräk", "lön"],
+    /* set 50 */ ["kiosk", "mitt", "mått", "påsk", "käpp", "lapp", "skepp", "skott", "smått", "mätt", "lopp", "läpp"]
+  ],
+
+  et: [
+    /* set 01 */ ["laen", "vaen", "vaev", "laev", "nael", "naer", "aed", "aeg", "kael", "kaev", "pael", "kaer"],
+    /* set 02 */ ["tee", "veel", "geen", "keeld", "peen", "meel", "neer", "leer", "lend", "vend", "mees", "mets"],
+    /* set 03 */ ["hetk", "retk", "matk", "matt", "makk", "rakk", "akt", "fakt", "katk", "kask", "vask", "mask"],
+    /* set 04 */ ["praad", "plaan", "kraad", "kraan", "raad", "kraav", "laat", "latt", "plaat", "praam", "raag", "paat"],
+    /* set 05 */ ["rass", "trass", "fraas", "praak", "pank", "paak", "traat", "pakk", "park", "paks", "tark", "mark"],
+    /* set 06 */ ["kraam", "gramm", "kramp", "krahv", "lamp", "klaar", "trahv", "raam", "daam", "tramm", "tamm", "kamp"],
+    /* set 07 */ ["kauss", "kaust", "paus", "taust", "aus", "au", "aur", "auk", "kasv", "kass", "kast", "mast"],
+    /* set 08 */ ["laul", "haug", "pauk", "kaup", "haud", "raud", "laug", "laut", "laud", "hang", "hing", "luud"],
+    /* set 09 */ ["salk", "talv", "sats", "sall", "saal", "saag", "kalm", "palm", "parm", "samm", "salm", "maal"],
+    /* set 10 */ ["põud", "lõug", "tõug", "lõng", "õun", "jõuk", "tõus", "jõud", "nõu", "õnn", "sõnn", "õrn"],
+    /* set 11 */ ["põlv", "nõlv", "sõim", "sõlm", "mõrv", "sõrm", "kõrv", "võlg", "põld", "põll", "põnn", "kõrb"],
+    /* set 12 */ ["laik", "laip", "laisk", "lai", "laim", "aim", "ait", "vaid", "vaip", "vaim", "paik", "mai"],
+    /* set 13 */ ["õis", "lõik", "mõis", "hõrk", "hõlm", "kõik", "või", "võim", "sõit", "võit", "hõim", "nõid"],
+    /* set 14 */ ["nõel", "sõel", "kõht", "koht", "lõhn", "kõhn", "rõhk", "õhk", "nõrk", "võrk", "lõks", "laks"],
+    /* set 15 */ ["näpp", "täpp", "pätt", "käpp", "käik", "käsk", "käis", "pärm", "lärm", "pääs", "lääs", "lääts"],
+    /* set 16 */ ["säär", "sääst", "hääl", "väärt", "sääsk", "määr", "väär", "äär", "jää", "jääk", "jäik", "jäär"],
+    /* set 17 */ ["mäng", "märg", "nälg", "pärg", "härg", "jälg", "järv", "jätk", "järk", "mänd", "mäss", "äss"],
+    /* set 18 */ ["vähk", "värv", "välk", "jälk", "särk", "märk", "närv", "bänd", "känd", "kand", "tärn", "pärn"],
+    /* set 19 */ ["külm", "külg", "küll", "kütt", "küüs", "küps", "kükk", "püük", "rütm", "vihm", "rihm", "rühm"],
+    /* set 20 */ ["vürts", "vürst", "müüt", "münt", "müük", "mürk", "müür", "üür", "tüür", "tüüp", "tükk", "trükk"],
+    /* set 21 */ ["vist", "vest", "kest", "sest", "tekst", "test", "telg", "velg", "serv", "relv", "rehv", "kehv"],
+    /* set 22 */ ["plekk", "pekk", "sepp", "trepp", "lepp", "kepp", "tekk", "telk", "kett", "lett", "lehm", "leht"],
+    /* set 23 */ ["luu", "luup", "kuub", "kuusk", "uus", "uks", "puus", "uss", "suss", "kuu", "kuum", "kumm"],
+    /* set 24 */ ["usk", "uisk", "tuisk", "suusk", "juust", "just", "juus", "kuus", "lust", "must", "tuum", "tuim"],
+    /* set 25 */ ["turg", "kurg", "kurd", "murd", "purk", "kurk", "nurk", "nukk", "kukk", "puuk", "pukk", "lukk"],
+    /* set 26 */ ["saar", "tsaar", "staar", "staap", "part", "pant", "sant", "taks", "saak", "saks", "kaks", "jaks"],
+    /* set 27 */ ["poks", "lokk", "lohk", "oks", "ots", "pott", "sokk", "jooks", "jook", "kos´k", "kokk", "kook"],
+    /* set 28 */ ["laps", "lask", "laas", "maas", "maks", "mass", "tass", "taas", "marss", "maa", "maht", "mahl"],
+    /* set 29 */ ["tross", "troll", "tops", "kops", "kopp", "sopp", "boss", "poiss", "loss", "loos", "koos", "loom"],
+    /* set 30 */ ["proov", "polt", "volt", "pood", "koll", "roll", "kool", "kolm", "kolb", "komm", "kohv", "korv"],
+    /* set 31 */ ["ploom", "poom", "pomm", "loend", "soeng", "loeng", "soon", "tsoon", "tort", "torm", "torn", "tolm"],
+    /* set 32 */ ["nool", "noor", "mood'", "moos'", "rool", "roos'", "sool", "hool", "hoop", "jood", "soov", "soo"],
+    /* set 33 */ ["vorm", "norm", "loov", "vool", "tont", "tonn", "tool", "konn", "toit", "koit", "kon't", "rott"],
+    /* set 34 */ ["ports", "korts", "kord", "koor", "koon", "kork", "kood", "pronks", "konks", "fond", "blond", "rong"],
+    /* set 35 */ ["kiht", "siht", "pihk", "pilk", "pilv", "pits", "vits", "kilp", "kimp", "kits", "kips", "lips"],
+    /* set 36 */ ["stiil", "piin", "til'l", "lill", "piim", "liim", "kriim", "linn", "liin", "link", "lipp", "nipp"],
+    /* set 37 */ ["pliit", "liit", "liik", "kiip", "kiil", "lift", "niit", "näit", "siil", "liiv", "viiv", "liig"],
+    /* set 38 */ ["siin", "siis", "sein", "viis", "seen", "hein", "vein", "meil", "meik", "seik", "veis", "seis"],
+    /* set 39 */ ["hirm", "ilm", "fil'm", "viil", "miil", "kiiks", "kiik", "riik", "giid", "tint", "print", "vint"],
+    /* set 40 */ ["grill", "pill", "triip", "gripp", "pink", "kink", "pilt", "tikk", "kilk", "trikk", "tilk", "tiik"],
+    /* set 41 */ ["list", "lint", "liist", "riist", "rist", "risk", "kirst", "kirss", "riis", "reis", "kriis", "kriips"],
+    /* set 42 */ ["taim", "tai", "tiib", "tiim", "sait", "vaik", "vait", "maik", "pai", "laid", "leib", "leid"],
+    /* set 43 */ ["lind", "pind", "pikk", "rind", "ring", "kirg", "king", "sild", "sil't", "sikk", "sink", "tsink"],
+    /* set 44 */ ["klaas", "klass", "laast", "saast", "kaar", "kaart", "karp", "kark", "karm", "kant", "klapp", "lapp"],
+    /* set 45 */ ["grupp", "trupp", "truu", "ruut", "tuul", "pruut", "pruun", "jupp", "supp", "nupp", "vutt", "rutt"],
+    /* set 46 */ ["pirn", "piir", "kiir", "tiir", "juur", "uur", "kuur", "nurm", "surm", "suur", "suu", "süü"],
+    /* set 47 */ ["sukk", "hukk", "kutt", "mutt", "muhk", "juht", "tuhm", "tuhk", "kurv", "kurt", "hurt", "hunt"],
+    /* set 48 */ ["pul'ss", "pulm", "pull", "rull", "muld", "mull", "pult", "puit", "pulk", "hulk", "hull", "huul"],
+    /* set 49 */ ["null", "kull", "kuld", "kuid", "krun't", "kun'st", "kulm", "julm", "kurss", "kurb", "kulg", "kumb"],
+    /* set 50 */ ["ruum", "rumm", "trumm", "trump", "tund", "tung", "sund", "suund", "punn", "punt", "puu", "puur"]
+  ],
+
+  da: [
+    /* set 01 */ ["sur", "mur", "hus", "hjul", "gul", "fugl", "fuld", "mus", "kur", "klub", "lup", "kurs"],
+    /* set 02 */ ["ungt", "tungt", "mund", "sund", "ond", "vås", "mås", "mos", "kål", "kul", "hul", "pung"],
+    /* set 03 */ ["bil", "hvil", "mil", "mild", "ild", "ilt", "vild", "kig", "gik", "skidt", "smidt", "slidt"],
+    /* set 04 */ ["hold", "hop", "tolv", "kold", "prop", "krop", "job", "flok", "flot", "slot", "blåt", "kop"],
+    /* set 05 */ ["kind", "find", "bind", "ben", "men", "stik", "slik", "blik", "sen", "lidt", "hedt", "midt"],
+    /* set 06 */ ["hæk", "heks", "seks", "vejr", "svær", "sær", "hjelm", "hjælp", "færd", "hest", "gæst", "fest"],
+    /* set 07 */ ["mad", "bad", "bat", "had", "kat", "hat", "grædt", "sans", "dans", "dansk", "bræt", "træt"],
+    /* set 08 */ ["park", "bark", "tabt", "smart", "snart", "start", "sart", "fart", "rart", "kar", "par", "gabt"],
+    /* set 09 */ ["bort", "hjort", "kort", "dog", "tov", "lov", "plov", "flov", "flår", "slår", "norm", "form"],
+    /* set 10 */ ["fan", "van", "svag", "slag", "smag", "flag", "flad", "sal", "hval", "sav", "sag", "tal"],
+    /* set 11 */ ["tyr", "fyr", "dyr", "styr", "styrt", "ry", "by", "lys", "lyn", "hyg", "byg", "tyk"],
+    /* set 12 */ ["sølv", "føl", "kød", "skød", "sød", "nød", "mør", "dør", "gør", "gøs", "mønt", "pynt"],
+    /* set 13 */ ["bryst", "trøst", "høvl", "bøvl", "brøl", "brøk", "frøs", "frø", "bøn", "skøn", "køn", "løn"],
+    /* set 14 */ ["børn", "bjørn", "tjørn", "først", "tørst", "størst", "dør", "rør", "før", "tør", "strøm", "drøm"],
+    /* set 15 */ ["jord", "bor", "mord", "mor", "gro", "tro", "bro", "korn", "torn", "horn", "fod", "flod"],
+    /* set 16 */ ["blad", "blid", "ble", "bly", "blå", "blot", "blok", "plot", "plet", "plus", "plads", "plat"],
+    /* set 17 */ ["sjæl", "sjal", "sjov", "sov", "chok", "sok", "fang", "sang", "seng", "sjusk", "fusk", "fisk"],
+    /* set 18 */ ["ferm", "term", "tern", "fjern", "jern", "fersk", "hersk", "hverv", "dværg", "sværg", "bær", "er"],
+    /* set 19 */ ["glip", "klap", "klip", "glas", "glat", "glad", "gled", "klag", "klæg", "klam", "klem", "glem"],
+    /* set 20 */ ["rov", "rav", "rev", "brev", "brag", "grav", "vrag", "drev", "kræv", "lyv", "tyv", "syv"],
+    /* set 21 */ ["jagt", "magt", "lagt", "slank", "stank", "skank", "lam", "har", "bar", "rar", "dam", "kam"],
+    /* set 22 */ ["ren", "send", "lænd", "flæsk", "frisk", "læn", "pæn", "pen", "spær", "skær", "stær", "svær"],
+    /* set 23 */ ["gift", "gigt", "gris", "grin", "hiv", "fleece", "fnis", "niv", "liv", "siv", "hist", "sidst"],
+    /* set 24 */ ["biks", "niks", "fiks", "flint", "blindt", "klint", "ve", "se", "ske", "sne", "slips", "clips"],
+    /* set 25 */ ["fynsk", "synsk", "fyld", "hyld", "byld", "bylt", "lyst", "dyst", "tyst", "syl", "syr", "syg"],
+    /* set 26 */ ["pas", "bas", "gas", "alf", "alk", "alt", "valg", "fald", "salg", "fast", "kast", "hast"],
+    /* set 27 */ ["borg", "sorg", "torv", "fort", "hårdt", "skår", "spår", "står", "torsk", "norsk", "snork", "stork"],
+    /* set 28 */ ["post", "kost", "shop", "snob", "stop", "kok", "nok", "lok", "wok", "dom", "tom", "vom"],
+    /* set 29 */ ["grøft", "drøft", "røst", "ryg", "rødt", "søm", "søn", "dømt", "tømt", "ømt", "røb", "krøb"],
+    /* set 30 */ ["løv", "løb", "løs", "døs", "høst", "kyst", "lyst", "hørt", "ført", "kørt", "pløk", "gløgg"],
+    /* set 31 */ ["jagt", "magt", "lagt", "slank", "stank", "skank", "lam", "har", "bar", "rar", "dam", "kam"],
+    /* set 32 */ ["ren", "send", "lænd", "flæsk", "frisk", "læn", "pæn", "pen", "spær", "skær", "stær", "svær"],
+    /* set 33 */ ["gift", "gigt", "gris", "grin", "hiv", "fleece", "fnis", "niv", "liv", "siv", "hist", "sidst"],
+    /* set 34 */ ["biks", "niks", "fiks", "flint", "blindt", "klint", "ve", "se", "ske", "sne", "slips", "clips"],
+    /* set 35 */ ["fynsk", "synsk", "fyld", "hyld", "byld", "bylt", "lyst", "dyst", "tyst", "syl", "syr", "syg"],
+    /* set 36 */ ["pas", "bas", "gas", "alf", "alk", "alt", "valg", "fald", "salg", "fast", "kast", "hast"],
+    /* set 37 */ ["borg", "sorg", "torv", "fort", "hårdt", "skår", "spår", "står", "torsk", "norsk", "snork", "stork"],
+    /* set 38 */ ["post", "kost", "shop", "snob", "stop", "kok", "nok", "lok", "wok", "dom", "tom", "vom"],
+    /* set 39 */ ["grøft", "drøft", "røst", "ryg", "rødt", "søm", "søn", "dømt", "tømt", "ømt", "røb", "krøb"],
+    /* set 40 */ ["løv", "løb", "løs", "døs", "høst", "kyst", "lyst", "hørt", "ført", "kørt", "pløk", "gløgg"],
+    /* set 41 */ ["port", "lort", "bod", "jod", "mod", "klo", "kro", "kno", "knob", "stor", "snor", "spor"],
+    /* set 42 */ ["lad", "lag", "las", "lav", "tag", "tab", "sad", "gad", "sval", "kval", "karl", "mal"],
+    /* set 43 */ ["luft", "lift", "loft", "laks", "vaks", "vagt", "vægt", "lår", "vår", "vend", "vind", "lind"],
+    /* set 44 */ ["lim", "rim", "rids", "ris", "last", "lyst", "list", "rem", "rom", "rum", "læg", "læs"],
+    /* set 45 */ ["sejl", "savl", "hagl", "hen", "held", "hæl", "fæl", "frem", "from", "selv", "snøvs", "snavs"],
+    /* set 46 */ ["gab", "gal", "dal", "bal", "band", "bøn", "dram", "gram", "bak", "buk", "duk", "dæk"],
+    /* set 47 */ ["tak", "pak", "pap", "kant", "kendt", "tændt", "tynd", "tand", "pil", "pøl", "køl", "kæl"],
+    /* set 48 */ ["strand", "stram", "streg", "strejf", "stress", "strik", "strit", "strip", "strib", "stryg", "strø", "strå"],
+    /* set 49 */ ["skrap", "skrat", "skridt", "skrå", "skru", "skrig", "skrud", "skred", "skreg", "skrald", "skræl", "skræm"],
+    /* set 50 */ ["klask", "plask", "plast", "kvast", "knast", "pist", "pisk", "test", "tæsk", "mæsk", "elsk", "ældst"]
+  ],
+
+  hi: [
+    /* set 01 */ ["अमी", "अमीर", "अमर", "अरी", "अज़ीर्", "अरे", "अली", "अ सी", "अचीर", "अमा", "अभी", "अचार"],
+    /* set 02 */ ["आचार", "आधार", "आसार", "आहार", "आकार", "अपार", "अनार", "अनाज", "अकार", "साकार", "अजार", "अकाल"],
+    /* set 03 */ ["उभय", "उभार", "उदार", "उदास", "आभार", "अभय", "अजब", "अजय", "उहार", "उ चार", "आभा", "आशा"],
+    /* set 04 */ ["ऊमट", "ऊपर", "ऊमर", "ऊमस", "अपर", "अपार", "उमर", "उतर", "उ म", "उ र", "अमर", "उमा"],
+    /* set 05 */ ["यथा", "कटी", "कटु", "कड़ी", "कड़ा", "कढ़ी", "क था", "कथा", "कक्षा", "तथा", "क धा", "कंधार"],
+    /* set 06 */ ["कदम", "कदर", "क़तर", "कटार", "क़तार", "कट्टर", "कटाक्ष", "कबर", "कबीर", "कमर", "कातर", "कमल"],
+    /* set 07 */ ["कलत्र", "कलभ", "कलम", "कलह", "कला", "कलाई", "किल", "कि क", "किव", "कसाई", "क चा", "कवी"],
+    /* set 08 */ ["काढ़ा", "काना", "काया", "कारा", "काका", "काकी", "कला", "काली", "गला", "गली", "काला", "गाली"],
+    /* set 09 */ ["कसी", "कौड़ी", "कटी", "काटी", "काठी", "कोठी", "कोड़ा", "कमी", "कोढ़ी", "कभी", "कोसा", "कोना"],
+    /* set 10 */ ["ख़तम", "खता", "खड़ा", "खडी", "खत्री", "ख ना", "खफा", "खली", "खाली", "खाकी", "गाना", "खट्टा"],
+    /* set 11 */ ["खोया", "खाला", "खुला", "खुदा", "खुदी", "खुशी", "खोना", "खेमा", "खीमा", "खोजा", "गुदा", "गदा"],
+    /* set 12 */ ["गोता", "गोभी", "गोरा", "गोरी", "गोला", "गोली", "गोदी", "िगरा", "गीता", "खोली", "िगला", "िगलान"],
+    /* set 13 */ ["घंटा", "घंटी", "घटा", "घटी", "घड़ी", "घड़ा", "घोड़ा", "घना", "घाटा", "घाटी", "घटा", "घोटा"],
+    /* set 14 */ ["चहक", "चूड़ी", "चुना", "चूनी", "चना", "चचार्", "चूहा", "चू हा", "चूड़ा", "चौड़ा", "चनक", "चला"],
+    /* set 15 */ ["छाता", "छाती", "छाना", "छापा", "छाला", "छूना", "छे ना", "आला", "छाया", "माया", "आटा", "आज्ञा"],
+    /* set 16 */ ["छटा", "छठा", "छड़ा", "छड़ी", "छ ला", "छवी", "छ नी", "छूटा", "छूटी", "छोरा", "छींटा", "चींटा"],
+    /* set 17 */ ["चोटी", "चोखा", "चोरी", "चरी", "चरण", "चारण", "छोटी", "चोला", "चेला", "छोटा", "कारण", "कोरी"],
+    /* set 18 */ ["कंठा", "कंठी", "कंडा", "कंडी", "कंदी", "कंचा", "कंचन", "कंगन", "गंडा", "गंदा", "ठं डा", "ठं डक"],
+    /* set 19 */ ["चौकी", "चौका", "चौड़ा", "चौरा", "चौरस", "चारा", "चाचा", "चाची", "चीरा", "खीरा", "चाला", "चाली"],
+    /* set 20 */ ["कपट", "कपाट", "कपाल", "कपास", "कपोल", "कपत", "चपत", "चपल", "चावल", "कमाल", "कलोल", "जमाल"],
+    /* set 21 */ ["जाड़ा", "जाित", "जाना", "जाता", "जामा", "जाला", "जला", "जमा", "जाली", "झाला", "झोला", "झोली"],
+    /* set 22 */ ["जीना", "जीजा", "जीता", "जाड़ा", "जीरा", "जोती", "योती", "जोगी", "जागी", "जगा", "जगत", "जगल"],
+    /* set 23 */ ["टोपी", "टोली", "डोली", "डाली", "डली", "डाका", "डाला", "काकी", "टोला", "काका", "टीबा", "टीला"],
+    /* set 24 */ ["ठीका", "ढीला", "ठगा", "ठे का", "ठे ला", "ठोका", "टोका", "ठोकर", "ढे रा", "ढे ला", "टीका", "टका"],
+    /* set 25 */ ["क थक", "कथन", "कटक", "कड़क", "कलंक", "कनक", "ठनक", "ठसक", "िगट्टक", "िगटक", "ऐना", "ऐनक"],
+    /* set 26 */ ["त ा", "तथा", "तमा", "तमाम", "तवा", "तला", "तलब", "तलाश", "ताला", "तेली", "तारा", "तेज़ी"],
+    /* set 27 */ ["तोड़ा", "तोता", "तोबा", "तोला", "तोशा", "तोती", "तूती", "तूरी", "तीतर", "तीता", "तुला", "तुली"],
+    /* set 28 */ ["ता ण", "त ण", "त", "तराई", "तरफ", "तरज", "तरह", "तेरह", "तेरा", "व ण", "तारा", "तरल"],
+    /* set 29 */ ["खाता", "खाते", "आता", "खाती", "खादी", "खाड़ी", "खाना", "खारा", "खािन", "खामी", "गाड़ी", "गाही"],
+    /* set 30 */ ["दं गा", "दगा", "दफा", "दमा", "दमन", "दया", "दयार", "दरार", "दराज़", "दराई", "दरी", "दायर"],
+    /* set 31 */ ["द तक", "द ता", "द तार", "द तूर", "दहक", "दशक", "दशा", "दक्षा", "दबक", "दशम", "दजार्", "दजर्न"],
+    /* set 32 */ ["दाता", "दाढी", "दादा", "दादी", "दाना", "दानाई", "दायी", "दावा", "दावत", "दासी", "ताना", "तागा"],
+    /* set 33 */ ["धक्का", "ध जी", "धड़ा", "ध बा", "धरा", "धरी", "धतार्", "धा या", "धारा", "धारण", "कतार्", "धाबा"],
+    /* set 34 */ ["नतम", "नदम", "नदर", "नदी", "नमत", "नमक", "नमन", "नयन", "नरम", "नजर", "चमन", "चयन"],
+    /* set 35 */ ["नक्का", "नक्की", "नक्कू", "नक्शा", "नक्षत्र", "नफ़ा", "नया", "नरीर्", "न थी", "नदार्", "नशा", "िनशा"],
+    /* set 36 */ ["नरा", "नरी", "नदर् न", "नटी", "नला", "नली", "न ली", "नटन", "नटई", "नटाई", "नाला", "टाला"],
+    /* set 37 */ ["नकद", "नकाब", "नकल", "नवार", "नकार", "नकेल", "नक्कार", "नवल", "नवक", "नवत", "नहार", "नहान"],
+    /* set 38 */ ["पाड़ा", "फाड़ा", "पाथा", "पानी", "पायल", "पायी", "पारा", "पािर", "पायन", "पारस", "रानी", "रागी"],
+    /* set 39 */ ["पाचन", "पाटन", "पाटल", "पाठन", "पाठीन", "पाला", "पावन", "पावस", "पालक", "पालन", "सालन", "साधन"],
+    /* set 40 */ ["पीका", "पीछा", "पीछे", "पीठा", "पेठा", "पीड़ा", "पीता", "पीना", "पीला", "पला", "पलाल", "पलाश"],
+    /* set 41 */ ["पुड़ा", "पुरी", "पुत्री", "पुिटत", "पट", "ु ी", "पुि", "पूरी", "पुवा", "पुराज", "परु ा", "ू ी"],
+    /* set 42 */ ["पँूजी", "पूजा", "पूजाह", "पूता", "", "परू क", "पूरब", "पूणार्", "पूतीर्", "पूवार्", "पन", "बंधन"],
+    /* set 43 */ ["बंजर", "बंटी", "बंदर", "बंदी", "", "बंधी", "बंधू", "बंसी", "बंदा", "बंका", "", "संकट"],
+    /* set 44 */ ["संगत", "संगम", "संगल", "संकल", "", "संक प", "संक", "संकुल", "संगीत", "संगीन", "", "सतल"],
+    /* set 45 */ ["सखी", "सख्ती", "सची", "सचल", "", "सड़न", "सतह", "सित", "सचन", "सदन", "", "सारा"],
+    /* set 46 */ ["साकांक्ष", "साका", "सौदा", "साचार", "", "सादा", "सादर", "साधार", "सागर", "साया", "", "िसंधी"],
+    /* set 47 */ ["साक्षी", "साखी", "साझी", "साड़ी", "", "साथी", "साफी", "िसंधु", "िसंही", "िसड़ी", "", "खा"],
+    /* set 48 */ ["िरक्ता", "िरक्शा", "िरहा", "िर ता", "", "ची", "रे खा", "चा", "पा", "हा", "", "वलय"],
+    /* set 49 */ ["वजन", "वजह", "वतन", "वयन", "", "वजर्न", "वणर्न", "वणार्", "वषार्", "वलन", "", "िशला"],
+    /* set 50 */ ["िशखर", "िशखा", "िशखी", "िशरा", "", "िशक्षा", "िशली", "शैली", "इला", "िसखा", "", ""]
+  ],
+
+  ru: [
+    /* set 01 */ ["марка", "манка", "лавка", "давка", "бабка", "балка", "палка", "каска", "краска", "маска", "ласка", "леска"],
+    /* set 02 */ ["вода", "мода", "морда", "орда", "кора", "кара", "кома", "коса", "коза", "копа", "роса", "карат"],
+    /* set 03 */ ["лоза", "ложа", "лыжа", "грыжа", "ложь", "лужа", "лупа", "лежа", "лежка", "ложе", "ложка", "ложь"],
+    /* set 04 */ ["слива", "слава", "слева", "слеза", "слезать", "слив", "сливать", "слинять", "слово", "лира", "лиса", "липа"],
+    /* set 05 */ ["справа", "право", "криво", "крыло", "рыло", "мыло", "мило", "кило", "кино", "вино", "вина", "мина"],
+    /* set 06 */ ["смелый", "спелый", "милый", "малый", "алый", "талый", "палый", "минный", "мирный", "винный", "ванный", "мерный"],
+    /* set 07 */ ["мерить", "месить", "весить", "верить", "варить", "парить", "шарить", "шалить", "палить", "полить", "солить", "сорить"],
+    /* set 08 */ ["парик", "шарик", "шарфик", "сухой", "сухо", "ухо", "уха", "ухаб", "уток", "урок", "успех", "успеть"],
+    /* set 09 */ ["уснуть", "куснуть", "киснуть", "виснуть", "кусок", "курок", "кубок", "кубик", "кубрик", "крыто", "крыло", "круто"],
+    /* set 10 */ ["рука", "мука", "муха", "доска", "тоска", "тело", "тепло", "тесно", "тесто", "место", "село", "дело"],
+    /* set 11 */ ["топить", "топать", "копать", "ковать", "карать", "марать", "морить", "корить", "косить", "копить", "попить", "попеть"],
+    /* set 12 */ ["наказ", "заказ", "показ", "запас", "закат", "накат", "нажать", "сажать", "сажа", "сага", "пожать", "рожать"],
+    /* set 13 */ ["редеть", "реветь", "седеть", "сидеть", "видеть", "висеть", "рыдать", "выдать", "выдуть", "вынуть", "кинуть", "пинуть"],
+    /* set 14 */ ["выжать", "выждать", "выжечь", "высечь", "вытечь", "выжить", "вылить", "выпить", "выбыть", "вымыть", "вырыть", "вышить"],
+    /* set 15 */ ["вышка", "мышка", "пышка", "пешка", "спешка", "слежка", "решка", "речка", "печка", "пачка", "почка", "дочка"],
+    /* set 16 */ ["доход", "поход", "проход", "приход", "прихоть", "уход", "урод", "урал", "уран", "буран", "буря", "бура"],
+    /* set 17 */ ["позор", "дозор", "донор", "донос", "довод", "повод", "овод", "овощ", "обод", "обед", "обет", "обить"],
+    /* set 18 */ ["рама", "дама", "рана", "мама", "ванна", "вилка", "пилка", "жилка", "жила", "пила", "сила", "силач"],
+    /* set 19 */ ["сетка", "ветка", "детка", "девка", "метка", "мерка", "мера", "сера", "вера", "вена", "пена", "верба"],
+    /* set 20 */ ["потоп", "потом", "поток", "лоток", "лото", "лотос", "моток", "мотор", "привод", "привоз", "провод", "провоз"],
+    /* set 21 */ ["укол", "укор", "упор", "рупор", "узор", "угол", "угорь", "гора", "пора", "порча", "парча", "парта"],
+    /* set 22 */ ["налог", "залог", "зарок", "порок", "порог", "пирог", "пинок", "венок", "висок", "песок", "лесок", "пророк"],
+    /* set 23 */ ["дойка", "мойка", "майка", "шайка", "гайка", "лайка", "лейка", "чайка", "мести", "везти", "нести", "нестись"],
+    /* set 24 */ ["дуга", "дума", "душа", "кума", "куда", "руда", "груда", "грудка", "гряда", "кулек", "кулак", "сумма"],
+    /* set 25 */ ["чашка", "чаша", "чаща", "чарка", "чара", "варка", "аркан", "арка", "жарко", "жалко", "жара", "жало"],
+    /* set 26 */ ["ранка", "банка", "рамка", "самка", "сумка", "сушка", "мушка", "пушка", "крупа", "туча", "куча", "круча"],
+    /* set 27 */ ["крыса", "краса", "кража", "раса", "ряса", "оса", "она", "зона", "зола", "зоря", "затем", "затечь"],
+    /* set 28 */ ["прокол", "прикол", "покой", "покос", "помост", "помол", "помочь", "помощь", "помет", "помесь", "помои", "полет"],
+    /* set 29 */ ["полный", "полый", "вольный", "вольно", "больно", "полно", "полон", "поджох", "подвод", "отвод", "отход", "выход"],
+    /* set 30 */ ["струна", "страна", "странно", "страстно", "трава", "трата", "триста", "киста", "тропа", "рота", "рвота", "квота"],
+    /* set 31 */ ["скука", "скула", "кулак", "скулить", "скупить", "скупой", "тупой", "тугой", "туго", "турник", "турнир", "скалить"],
+    /* set 32 */ ["скачка", "сказка", "смазка", "скатка", "скачать", "скучать", "начать", "зачать", "печать", "печаль", "мычать", "рычать"],
+    /* set 33 */ ["повар", "пожар", "товар", "токарь", "топот", "топор", "тополь", "топка", "стопка", "томить", "точить", "мочить"],
+    /* set 34 */ ["пустой", "густой", "устой", "устрой", "строить", "троить", "кроить", "крошить", "красить", "просить", "просо", "просто"],
+    /* set 35 */ ["набор", "забор", "собор", "совок", "сорок", "прибор", "пробор", "прибой", "простор", "простой", "простить", "растить"],
+    /* set 36 */ ["труба", "трубач", "трубка", "рубка", "шубка", "шутка", "утка", "трубить", "рубить", "убить", "убыть", "умыть"],
+    /* set 37 */ ["форма", "норма", "нора", "нога", "йога", "корма", "корка", "порка", "полка", "холка", "челка", "елка"],
+    /* set 38 */ ["холод", "голод", "город", "голос", "волос", "колос", "колоть", "молоть", "полоть", "молот", "морить", "мирить"],
+    /* set 39 */ ["понять", "вонять", "вгонять", "гонять", "ронять", "ранить", "манить", "разлить", "развить", "разлив", "облить", "облик"],
+    /* set 40 */ ["ахать", "пахать", "махать", "макать", "макет", "пакет", "пикет", "пират", "парад", "пара", "фара", "тара"],
+    /* set 41 */ ["кабан", "кабак", "рыбак", "рыба", "рычаг", "казак", "канат", "канал", "канун", "кануть", "вернуть", "дернуть"],
+    /* set 42 */ ["побыть", "помыть", "помять", "побить", "пробить", "прибить", "залить", "залив", "забить", "запить", "зажить", "зажим"],
+    /* set 43 */ ["заря", "заряд", "наряд", "народ", "надуть", "надеть", "задеть", "задуть", "забыть", "зарыть", "заржать", "зажать"],
+    /* set 44 */ ["белить", "делить", "острить", "остричь", "острие", "остро", "острог", "остров", "отбить", "обить", "обвить", "обжить"],
+    /* set 45 */ ["обман", "обмен", "обрез", "обречь", "сберечь", "стеречь", "стереть", "степень", "ступень", "студень", "студент", "ступень"],
+    /* set 46 */ ["стужа", "ступа", "ступать", "стукать", "стучать", "уметь", "иметь", "умнеть", "умно", "устно", "обрыв", "отрыв"],
+    /* set 47 */ ["щедро", "ведро", "бедро", "бодро", "это", "эхо", "ухо", "этот", "этап", "этаж", "этак", "итак"],
+    /* set 48 */ ["шофер", "шабаш", "шалаш", "шахтер", "вахтер", "шатер", "катер", "шахта", "вахта", "вата", "шашка", "шапка"],
+    /* set 49 */ ["щука", "щека", "река", "щепка", "репка", "рейка", "щелка", "щетка", "щебет", "щебень", "шея", "швея"],
+    /* set 50 */ ["чавкать", "гавкать", "череп", "через", "черта", "чета", "четный", "летный", "потный", "постный", "костный", "ротный"]
+  ],
+
+  ar: [
+    /* set 01 */ ["بيت", "بحوث", "بكر", "بلد", "بشر", "بشرى", "بحر", "بحثي", "بئر", "بندر"],
+    /* set 02 */ ["جبل", "بصل", "كحل", "سيول", "وصل", "كبل", "نعل", "جمل", "حبل", "عقل"],
+    /* set 03 */ ["عمل", "عالم", "عنب", "عقد", "عين", "عظم", "عرب", "عريش", "علب", "عهد"],
+    /* set 04 */ ["آسد", "جهد", "قعد", "ولد", "بعد", "رعد", "ورده", "سعد", "قلد", "جيد"],
+    /* set 05 */ ["سواق", "سكين", "سخط", "سهل", "سهم", "سوسه", "سوري", "سيفي", "سجن", "سكر"],
+    /* set 06 */ ["مطر", "نهر", "جبر", "قمر", "بقر", "حجر", "شجر", "قهر", "قدر", "سطر"],
+    /* set 07 */ ["كتاب", "كرس", "كنزي", "كفن", "كوكب", "كهل", "كرم", "كسر", "كذب", "كبس"],
+    /* set 08 */ ["جلب", "سبح", "قلبي", "ساب", "ذهب", "كسب", "نحب", "لعب", "زبل", "حلب"],
+    /* set 09 */ ["نجم", "نظر", "نشير", "نعم", "نمر", "نحر", "نصار", "نعول", "نادي", "نصي"],
+    /* set 10 */ ["عظيم", "نجيم", "آليم", "حتم", "كتم", "كاظم", "حكيم", "سليم", "حسيم", "شتم"],
+    /* set 11 */ ["شامس", "شرب", "رساب", "شعر", "شروق", "شمل", "شكر", "شهم", "رفرف", "شموس"],
+    /* set 12 */ ["كراس", "جرس", "مارس", "نحاس", "حبس", "جلس", "حارس", "جواس", "مكتب", "عباس"],
+    /* set 13 */ ["مفتاح", "فعل", "فرد", "فالح", "فحم", "فضل", "فقع", "فصل", "", "فواز"],
+    /* set 14 */ ["ملف", "سقيف", "جرف", "نزف", "عطف", "عزف", "حتف", "أخذ", "", "أسكت"],
+    /* set 15 */ ["أسد", "أرضي", "أمل", "أمين", "أملس", "أبر", "أكبر", "سمن", "", "قرين"],
+    /* set 16 */ ["حسن", "حزن", "بدن", "سخن", "بطن", "عفن", "كمين", "جري", "", "جذاب"],
+    /* set 17 */ ["جديد", "جمال", "جذر", "جسر", "جفن", "جسم", "جريح", "خافي", "", "زز"],
+    /* set 18 */ ["موعد", "مركز", "مدير", "مني", "مني", "معي", "منذر", "قذر", "", "خلق"],
+    /* set 19 */ ["خيوط", "خمر", "خبر", "خدم", "خصم", "خادم", "خرج", "", "", "حذر"],
+    /* set 20 */ ["عي", "عذر", "حبر", "قبر", "فخر", "أبر", "نثر", "", "", ""],
+    /* set 21 */ ["دارس", "داجل", "دجل", "دمع", "دحر", "دفع", "دلك", "دنا", "داري", "دعا"],
+    /* set 22 */ ["ملك", "شبك", "سواك", "حلك", "علكه", "سكه", "فكه", "تركي", "حنكه", "مالك"],
+    /* set 23 */ ["لعب", "لقب", "لحم", "ليلى", "ليل", "لطيف", "لفته", "لبسه", "لمحه", "لهب"],
+    /* set 24 */ ["لمس", "لحس", "شحم", "ليل", "لبس", "لطف", "لدن", "لهب", "لطم", "لحن"],
+    /* set 25 */ ["ركب", "رمى", "ركض", "رسم", "رفع", "ربط", "رعى", "روحي", "رجف", "رحم"],
+    /* set 26 */ ["حشه", "غشاء", "قروش", "نقش", "منقش", "مفرش", "نشر", "فرشه", "حبشة", "عروش"],
+    /* set 27 */ ["طلب", "طمع", "طريد", "طيني", "طبق", "طرب", "طرف", "طرح", "طاب", "طهر"],
+    /* set 28 */ ["مزاز", "فزاز", "مزار", "عزبز", "فراز", "لواز", "مزاج", "فرزي", "كرز", "جهاز"],
+    /* set 29 */ ["والد", "وزر", "وجه", "وزن", "وقتي", "وفدي", "وكر", "ورق", "وهب", "ودي"],
+    /* set 30 */ ["دابر", "دافع", "داحر", "دخل", "داهس", "داهر", "دمي", "دبر", "داثر", "داري"],
+    /* set 31 */ ["زهر", "زرع", "زكم", "زعم", "زرق", "زمر", "زحف", "زعر", "زري", "زوال"],
+    /* set 32 */ ["صوفي", "خواف", "تلف", "سرف", "خلف", "طوف", "سياف", "رافي", "زؤف", "جراف"],
+    /* set 33 */ ["قتل", "قفز", "قول", "قبض", "قدم", "قفل", "قرأ", "قهر", "قيمه", "قرار"],
+    /* set 34 */ ["كريب", "قريب", "جانب", "عجب", "لعيب", "حروب", "قالب", "سراب", "حريق", "جاذب"],
+    /* set 35 */ ["حمل", "حدث", "حرم", "حسان", "حلق", "حجر", "حفر", "حفظ", "حقد", "حصار"],
+    /* set 36 */ ["كظم", "كريم", "حليم", "حلم", "كدم", "جرم", "سهم", "حزم", "شدم", "بكم"],
+    /* set 37 */ ["نزل", "نفر", "نبت", "نشأ", "نزع", "نحت", "نجر", "نخل", "نهض", "ندم"],
+    /* set 38 */ ["قمر", "قلم", "بكر", "قصيد", "قضاء", "حبر", "خطر", "نذر", "قفل", "نصر"],
+    /* set 39 */ ["تلقى", "تبغ", "ترك", "تفاح", "تبع", "تاج", "توج", "تنام", "تعب", "توتي"],
+    /* set 40 */ ["شحن", "عدن", "سجن", "كوني", "سمن", "ثمن", "لمح", "سنن", "قرين", "قطن"],
+    /* set 41 */ ["فهم", "فرق", "فكر", "فريد", "فرح", "فجر", "فخر", "فرخ", "فسد", "فايز"],
+    /* set 42 */ ["نجيب", "شنب", "صخب", "جلب", "حروب", "كتب", "سلب", "هرب", "لهب", "جنب"],
+    /* set 43 */ ["بكى", "بايع", "بذر", "بلغ", "بحث", "برز", "بسط", "بشير", "بدأ", "بقي"],
+    /* set 44 */ ["مدح", "شرح", "جرح", "نجح", "مرح", "طمح", "نمح", "وضح", "فتح", "طمس"],
+    /* set 45 */ ["كتب", "كذب", "نصب", "كشف", "كسف", "كبر", "كور", "كره", "كمل", "كشط"],
+    /* set 46 */ ["وقتي", "خفتي", "زيوت", "بيت", "شريت", "صوت", "بكيت", "ثبت", "قسيت", "صمتي"],
+    /* set 47 */ ["عرف", "عبر", "عقد", "عمل", "عزم", "عفن", "عزف", "علم", "عذر", "علق"],
+    /* set 48 */ ["فيال", "رمال", "نقل", "حمال", "بطل", "كحل", "فيصل", "هطل", "خيال", "نحال"],
+    /* set 49 */ ["سكر", "سحق", "سمع", "سفر", "سرق", "سجد", "سكن", "سقط", "سلك", "سق م"],
+    /* set 50 */ ["كلف", "ختم", "نغم", "قسم", "رحم", "جرم", "سلم", "حكم", "شهم", "كلم"],
+    /* set 51 */ ["حبس", "نفس", "طمس", "غرس", "انيس", "جليس", "تارس", "نحاس", "زفاف", "جرس"],
+    /* set 52 */ ["زرع", "زهير", "زخم", "زبد", "زحف", "زال", "زجر", "زبده", "لحاف", "زارق"],
+    /* set 53 */ ["صي", "صدق", "صفو", "صخب", "رصخ", "حفظ", "ضرب", "رصح", "مرهم", "صياح"],
+    /* set 54 */ ["قطع", "قتل", "قرأ", "قبض", "قروض", "قهر", "قدم", "قفاز", "نغمه", "قدام"],
+    /* set 55 */ ["طرق", "طبق", "طراد", "طلب", "طعم", "طمع", "طالب", "طبع", "", "طرد"],
+    /* set 56 */ ["عمد", "سعيد", "بعيد", "حمد", "وعد", "جحد", "كبد", "عبد", "", "وريد"],
+    /* set 57 */ ["زمان", "زاير", "زينه", "زوجه", "زبده", "زابد", "زعيم", "", "", ""],
+    /* set 58 */ ["لولب", "لطيف", "لمعه", "لوحه", "لسان", "لؤلؤ", "لوزه", "", "", ""],
+    /* set 59 */ ["مرم", "مشمش", "مسجد", "مرسم", "مكرم", "معلم", "مبسم", "", "", ""],
+    /* set 60 */ ["نورس", "نمنم", "نافذ", "نرسين", "معطر", "نرجس", "نياس", "", "", ""]
+  ],
+
+};
 
 /**
  * Return (or create) a shuffled column order for a speaker.
- * Stored in localStorage as "colOrder_{lang}_{speaker}" → JSON array of 1-based col indices.
- * Generated once on first subsection; reused for all subsequent subsections.
+ * Stored in localStorage as "colOrder_{lang}_{speaker}".
+ * Number of columns = getLangConfig(lang).numSubsections.
  */
 function getColOrder(lang, speaker) {
-  const key      = `colOrder_${lang}_${speaker}`;
-  const stored   = localStorage.getItem(key);
-  if (stored) return JSON.parse(stored);
-  // Fisher-Yates shuffle of [1..NUM_SUBSECTIONS]
-  const order = Array.from({ length: NUM_SUBSECTIONS }, (_, i) => i + 1);
+  const { numSubsections } = getLangConfig(lang);
+  const key    = `colOrder_${lang}_${speaker}`;
+  const stored = localStorage.getItem(key);
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    if (parsed.length === numSubsections) return parsed;
+  }
+  const order = Array.from({ length: numSubsections }, (_, i) => i + 1);
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [order[i], order[j]] = [order[j], order[i]];
@@ -151,19 +712,18 @@ function getColOrder(lang, speaker) {
 }
 
 /**
- * Return 50 word_ids for a subsection session.
- * The column assigned to each subsection is drawn from the speaker's
- * shuffled column order, so all 600 words are covered in random order.
+ * Return word_ids for a subsession.
+ * Number of words = getLangConfig(lang).numSets.
  * Word_id format: "set01_col07"  (1-indexed in both parts)
  */
 function getSessionWords(subsection, lang = "en", speaker = "") {
-  if (subsection < 1 || subsection > NUM_SUBSECTIONS) {
-    throw new RangeError(`subsection must be 1–${NUM_SUBSECTIONS}`);
+  const { numSets, numSubsections } = getLangConfig(lang);
+  if (subsection < 1 || subsection > numSubsections) {
+    throw new RangeError(`subsection must be 1–${numSubsections}`);
   }
-  const col   = getColOrder(lang, speaker)[subsection - 1];
-  const data  = WORD_DATA[lang] || WORD_DATA.en;
-  // Shuffle set order so the first word isn't always from set01
-  const rows  = Array.from({ length: data.length }, (_, i) => i + 1);
+  const col  = getColOrder(lang, speaker)[subsection - 1];
+  const data = WORD_DATA[lang] || WORD_DATA.en;
+  const rows = Array.from({ length: numSets }, (_, i) => i + 1);
   for (let i = rows.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [rows[i], rows[j]] = [rows[j], rows[i]];
@@ -175,7 +735,6 @@ function getSessionWords(subsection, lang = "en", speaker = "") {
 
 /**
  * Look up the canonical word for a word_id like "set01_col03".
- * Falls back to the word_id itself if parsing fails.
  */
 function getCanonical(wordId, lang = "en") {
   const m = /^set(\d+)_col(\d+)$/.exec(wordId);
@@ -185,3 +744,4 @@ function getCanonical(wordId, lang = "en") {
   const data = WORD_DATA[lang] || WORD_DATA.en;
   return (data[row] && data[row][col]) ?? wordId;
 }
+

@@ -28,7 +28,7 @@
 
   function saveNextSubsection(lang, speaker, current) {
     const next = current + 1;
-    if (next > NUM_SUBSECTIONS) {
+    if (next > getLangConfig(lang).numSubsections) {
       localStorage.removeItem(storageKey(lang, speaker));
     } else {
       localStorage.setItem(storageKey(lang, speaker), String(next));
@@ -90,9 +90,10 @@
     const l    = languageSelect.value;
     if (!safe) { subsectionInfo.classList.add("hidden"); return; }
     const sub  = getCurrentSubsection(l, safe);
-    subsectionInfo.textContent = sub > NUM_SUBSECTIONS
-      ? `All ${NUM_SUBSECTIONS} subsections complete for this speaker.`
-      : `Next: subsection ${sub} of ${NUM_SUBSECTIONS}`;
+    const { numSubsections } = getLangConfig(l);
+    subsectionInfo.textContent = sub > numSubsections
+      ? `All ${numSubsections} subsections complete for this speaker.`
+      : `Next: subsection ${sub} of ${numSubsections}`;
     subsectionInfo.classList.remove("hidden");
   }
 
@@ -142,6 +143,7 @@
     hideError(setupError);
 
     subsection = getCurrentSubsection(lang, safeSpeaker);
+    const NUM_SUBSECTIONS = getLangConfig(lang).numSubsections;
     if (subsection > NUM_SUBSECTIONS) {
       showError(setupError,
         `All ${NUM_SUBSECTIONS} subsections for "${safeSpeaker}" (${LANGUAGES[lang]}) are already complete.`);
@@ -263,9 +265,10 @@
 
   // ----- Subsection complete -----
   function finishSession() {
+    const { numSubsections } = getLangConfig(lang);
     saveNextSubsection(lang, safeSpeaker, subsection);
     const nextSub = subsection + 1;
-    const allDone = nextSub > NUM_SUBSECTIONS;
+    const allDone = nextSub > numSubsections;
 
     recordingSection.classList.add("hidden");
     doneSection.classList.remove("hidden");
@@ -277,12 +280,12 @@
     if (allDone) {
       doneTitle.textContent  = "All done!";
       doneDetail.textContent =
-        `All ${NUM_SUBSECTIONS} subsections for "${safeSpeaker}" (${LANGUAGES[lang]}) are complete.`;
+        `All ${numSubsections} subsections for "${safeSpeaker}" (${LANGUAGES[lang]}) are complete.`;
       nextSessionBtn.classList.add("hidden");
     } else {
       doneTitle.textContent  = "Subsection complete — take a rest!";
       doneDetail.textContent =
-        `Subsection ${subsection} of ${NUM_SUBSECTIONS} done. ` +
+        `Subsection ${subsection} of ${numSubsections} done. ` +
         `When you're ready, click below to start subsection ${nextSub}.`;
       nextSessionBtn.classList.remove("hidden");
     }
