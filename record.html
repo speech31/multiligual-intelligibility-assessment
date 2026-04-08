@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Record — Multilingual Intelligibility Test</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-brand">Multilingual Intelligibility Test</a>
+    <div class="nav-links">
+      <a href="record.html" class="active">Record</a>
+      <a href="transcribe.html">Transcribe</a>
+    </div>
+  </nav>
+  <main>
+    <div class="card">
+      <h2>Recording Mode</h2>
+
+      <!-- Setup form -->
+      <div id="setup-section">
+        <p>Enter your speaker ID and click <strong>Start Session</strong>.
+           The app picks one word per set at random (50 words, rest break every 10).
+           Files are saved as <code>{speaker_id}/sub{N}/{filename}.wav</code>.</p>
+        <div class="form-row">
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="ko">Korean</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="speaker-id">Speaker ID</label>
+          <input type="text" id="speaker-id" placeholder="e.g. s001" autocomplete="off" />
+        </div>
+        <!-- Subsection shown as read-only info, not an input -->
+        <p id="subsection-info" class="session-label hidden"></p>
+        <button id="start-btn" class="btn btn-primary">Start Session</button>
+        <p id="setup-error" class="error hidden"></p>
+      </div>
+
+      <!-- Recording UI -->
+      <div id="recording-section" class="hidden">
+        <p class="session-label">Session: <strong id="session-id-label"></strong></p>
+        <p class="session-label" id="save-folder-note"></p>
+        <p class="progress-label">Word <span id="word-index">1</span> of <span id="word-total">50</span></p>
+
+        <div class="word-display" id="word-display"></div>
+
+        <div class="recorder-controls">
+          <button id="record-btn" class="btn btn-record">Record</button>
+          <button id="stop-btn" class="btn btn-stop hidden">Stop</button>
+        </div>
+
+        <div id="review-section" class="hidden">
+          <audio id="preview-audio" controls></audio>
+          <div class="review-buttons">
+            <button id="rerecord-btn" class="btn btn-secondary">Re-record</button>
+            <button id="upload-btn" class="btn btn-primary">Save &amp; Next</button>
+          </div>
+          <p id="upload-status" class="status-msg"></p>
+        </div>
+      </div>
+
+      <!-- Session complete → prompt for next subsection or all done -->
+      <div id="done-section" class="hidden">
+        <div class="done-box">
+          <h3 id="done-title">Session complete!</h3>
+          <p id="done-detail"></p>
+          <p>Files saved in: <code id="done-folder"></code></p>
+          <div style="display:flex;gap:1rem;justify-content:center;margin-top:1rem">
+            <a href="record.html" id="next-session-btn" class="btn btn-primary hidden">Start Next Session</a>
+            <a href="index.html" class="btn btn-secondary">Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="static/js/words.js"></script>
+  <script src="static/js/audio.js"></script>
+  <script src="static/js/recorder.js"></script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+/* --------------------------------------------------------
+   Reset & base
+-------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f5f6fa;
+  color: #222;
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------
+   Nav
+-------------------------------------------------------- */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2c3e50;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+}
+
+.nav-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links a {
+  color: #ccc;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-size: 0.95rem;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: #fff;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 2px;
+}
+
+/* --------------------------------------------------------
+   Layout
+-------------------------------------------------------- */
+main {
+  max-width: 680px;
+  margin: 2.5rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.center-card {
+  text-align: center;
+}
+
+h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.4rem; margin-bottom: 1.25rem; }
+h3 { font-size: 1.2rem; margin-bottom: 0.75rem; }
+
+p { line-height: 1.6; margin-bottom: 0.75rem; }
+
+/* --------------------------------------------------------
+   Buttons
+-------------------------------------------------------- */
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary   { background: #3498db; color: #fff; }
+.btn-secondary { background: #95a5a6; color: #fff; }
+.btn-record    { background: #e74c3c; color: #fff; }
+.btn-stop      { background: #e67e22; color: #fff; }
+
+.mode-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* --------------------------------------------------------
+   Forms
+-------------------------------------------------------- */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-row label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #555;
+}
+
+.form-row input,
+.form-row select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  border-color: #3498db;
+}
+
+/* --------------------------------------------------------
+   Recording mode
+-------------------------------------------------------- */
+.session-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 1.25rem;
+}
+
+.word-display {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  color: #2c3e50;
+  margin: 1.5rem 0;
+  letter-spacing: 0.05em;
+  min-height: 4rem;
+}
+
+.recorder-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+#review-section {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+#review-section audio {
+  display: block;
+  margin: 0 auto 1rem;
+  width: 100%;
+}
+
+.review-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.done-box {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.done-box h3 { color: #27ae60; margin-bottom: 0.5rem; }
+.done-box p  { margin-bottom: 0.5rem; }
+.done-box code { background: #eee; padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.9rem; }
+
+#rest-section .done-box h3 { color: #e67e22; }
+
+/* --------------------------------------------------------
+   Transcription mode
+-------------------------------------------------------- */
+.audio-block {
+  margin: 1rem 0;
+}
+
+.file-name-label {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+#audio-player {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.score-box {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th { background: #f0f0f0; font-weight: 600; }
+tr:nth-child(even) td { background: #fafafa; }
+
+td.correct-1 { color: #27ae60; font-weight: 700; }
+td.correct-0 { color: #e74c3c; font-weight: 700; }
+
+.csv-note {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.csv-note code {
+  background: #eee;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+/* --------------------------------------------------------
+   Acknowledgments
+-------------------------------------------------------- */
+.acknowledgments {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.acknowledgments h2 {
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.acknowledgments h3 {
+  margin-top: 1rem;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.citation-list {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.citation-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.citation-list a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.citation-list a:hover { text-decoration: underline; }
+
+.ack-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 1.25rem 0 1rem;
+}
+
+.app-credit {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0;
+}
+
+/* --------------------------------------------------------
+   Utility
+-------------------------------------------------------- */
+.hidden  { display: none !important; }
+
+.fallback-file-label {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.error {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.status-msg {
+  font-size: 0.9rem;
+  color: #27ae60;
+  margin-top: 0.5rem;
+  min-height: 1.2em;
+}
+
+.info-msg {
+  color: #888;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transcribe — Multilingual Intelligibility Test</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-brand">Multilingual Intelligibility Test</a>
+    <div class="nav-links">
+      <a href="record.html">Record</a>
+      <a href="transcribe.html" class="active">Transcribe</a>
+    </div>
+  </nav>
+  <main>
+    <div class="card">
+      <h2>Transcription Mode</h2>
+
+      <!-- Folder picker -->
+      <div id="picker-section">
+        <p>Select the language and the folder where your WAV recordings are saved.</p>
+        <div class="form-row" style="max-width:260px">
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="ko">Korean</option>
+          </select>
+        </div>
+        <button id="pick-folder-btn" class="btn btn-primary">Choose Folder</button>
+        <!-- Firefox fallback -->
+        <label id="fallback-label" class="hidden fallback-file-label">
+          Or select files manually:
+          <input type="file" id="fallback-input" accept=".wav" multiple />
+        </label>
+        <p id="picker-error" class="error hidden"></p>
+        <p id="folder-name-display" class="status-msg"></p>
+      </div>
+
+      <!-- Transcription UI -->
+      <div id="transcribe-section" class="hidden">
+        <p class="session-label">Folder: <strong id="session-label"></strong></p>
+        <p class="progress-label">File <span id="file-index">1</span> of <span id="file-total">?</span></p>
+
+        <div class="audio-block">
+          <p class="file-name-label" id="file-name-label"></p>
+          <audio id="audio-player" controls></audio>
+        </div>
+
+        <div class="form-row">
+          <label for="transcription-input">What did you hear?</label>
+          <input type="text" id="transcription-input" placeholder="Type the word here…" autocomplete="off" />
+        </div>
+
+        <div class="nav-buttons">
+          <button id="prev-btn" class="btn btn-secondary" disabled>Previous</button>
+          <button id="next-btn" class="btn btn-primary">Next</button>
+        </div>
+
+        <button id="submit-btn" class="btn btn-primary hidden">Save &amp; Score</button>
+        <p id="transcribe-status" class="status-msg"></p>
+      </div>
+
+      <!-- Results -->
+      <div id="results-section" class="hidden">
+        <h3>Results</h3>
+        <div class="score-box">
+          Score: <strong id="score-display"></strong>
+          (<span id="correct-display"></span> / <span id="total-display"></span> correct)
+        </div>
+        <table id="results-table">
+          <thead>
+            <tr><th>File</th><th>Canonical</th><th>Transcription</th><th>Correct</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="download-csv-btn" class="btn btn-secondary">Download CSV</button>
+        <a href="transcribe.html" class="btn btn-secondary" style="margin-left:0.5rem">Transcribe Another</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="static/js/words.js"></script>
+  <script src="static/js/transcriber.js"></script>
+</body>
+</html>
