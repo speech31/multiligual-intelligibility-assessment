@@ -132,19 +132,38 @@ const NUM_SETS        = WORD_DATA.en.length;          // 50
 const NUM_SUBSECTIONS = WORD_DATA.en[0].length;       // 12
 
 /**
- * Return 50 word_ids for a session — one RANDOMLY chosen word per set.
- * Each call produces a different selection; subsection is used for naming only.
+ * Return (or create) a shuffled column order for a speaker.
+ * Stored in localStorage as "colOrder_{lang}_{speaker}" → JSON array of 1-based col indices.
+ * Generated once on first subsection; reused for all subsequent subsections.
+ */
+function getColOrder(lang, speaker) {
+  const key      = `colOrder_${lang}_${speaker}`;
+  const stored   = localStorage.getItem(key);
+  if (stored) return JSON.parse(stored);
+  // Fisher-Yates shuffle of [1..NUM_SUBSECTIONS]
+  const order = Array.from({ length: NUM_SUBSECTIONS }, (_, i) => i + 1);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  localStorage.setItem(key, JSON.stringify(order));
+  return order;
+}
+
+/**
+ * Return 50 word_ids for a subsection session.
+ * The column assigned to each subsection is drawn from the speaker's
+ * shuffled column order, so all 600 words are covered in random order.
  * Word_id format: "set01_col07"  (1-indexed in both parts)
  */
-function getSessionWords(subsection, lang = "en") {
+function getSessionWords(subsection, lang = "en", speaker = "") {
   if (subsection < 1 || subsection > NUM_SUBSECTIONS) {
     throw new RangeError(`subsection must be 1–${NUM_SUBSECTIONS}`);
   }
+  const col  = getColOrder(lang, speaker)[subsection - 1];
   const data = WORD_DATA[lang] || WORD_DATA.en;
-  // Each subsection maps to one column — all 50 sets at that column position.
-  // 12 subsections × 50 sets = 600 words, full coverage with no repeats.
   return data.map((_, rowIdx) =>
-    `set${String(rowIdx + 1).padStart(2, "0")}_col${String(subsection).padStart(2, "0")}`
+    `set${String(rowIdx + 1).padStart(2, "0")}_col${String(col).padStart(2, "0")}`
   );
 }
 

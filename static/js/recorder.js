@@ -162,7 +162,7 @@
       }
     }
 
-    try { words = getSessionWords(subsection, lang); }
+    try { words = getSessionWords(subsection, lang, safeSpeaker); }
     catch (e) { showError(setupError, e.message); return; }
 
     sessionId = `${safeSpeaker}/sub${String(subsection).padStart(2, "0")}`;
