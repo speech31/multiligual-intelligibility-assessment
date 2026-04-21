@@ -20,9 +20,7 @@
 
       <!-- Setup form -->
       <div id="setup-section">
-        <p>Enter your speaker ID and click <strong>Start Session</strong>.
-           The app picks one word per set at random.
-           Files are saved as <code>{speaker_id}/sub{N}/{filename}.wav</code>.</p>
+        <p>Select the language you want to record, pick a mode and headphones option, enter your speaker ID, then click <strong>Start Session</strong>.
         <div class="form-row">
           <label for="language">Language</label>
           <select id="language">
@@ -41,6 +39,20 @@
           </select>
         </div>
         <div class="form-row">
+          <label>Mode</label>
+          <div class="mode-radio">
+            <label><input type="radio" name="mode" value="default" checked /> Research Mode (50 words)</label>
+            <label><input type="radio" name="mode" value="full" /> Developer Mode (600 words)</label>
+          </div>
+        </div>
+        <div class="form-row" id="headphone-row">
+          <label>Headphones</label>
+          <div class="mode-radio">
+            <label><input type="radio" name="headphone" value="with" checked /> With headphones (record while the word plays)</label>
+            <label><input type="radio" name="headphone" value="without" /> Without headphones (wait for the audio to finish, then speak)</label>
+          </div>
+        </div>
+        <div class="form-row">
           <label for="speaker-id">Speaker ID</label>
           <input type="text" id="speaker-id" placeholder="e.g. s001" autocomplete="off" />
         </div>
@@ -57,20 +69,11 @@
         <p class="progress-label">Word <span id="word-index">1</span> of <span id="word-total">50</span></p>
 
         <div class="word-display" id="word-display"></div>
+        <p id="mode-instruction" class="mode-instruction"></p>
 
-        <div class="recorder-controls">
-          <button id="record-btn" class="btn btn-record">Record</button>
-          <button id="stop-btn" class="btn btn-stop hidden">Stop</button>
-        </div>
-
-        <div id="review-section" class="hidden">
-          <audio id="preview-audio" controls></audio>
-          <div class="review-buttons">
-            <button id="rerecord-btn" class="btn btn-secondary">Re-record</button>
-            <button id="upload-btn" class="btn btn-primary">Save &amp; Next</button>
-          </div>
-          <p id="upload-status" class="status-msg"></p>
-        </div>
+        <audio id="preview-audio"></audio>
+        <p id="upload-status" class="status-msg"></p>
+        <p class="shortcut-hint"><kbd>z</kbd> previous · <kbd>x</kbd> save &amp; next · <kbd>c</kbd> re-record · <kbd>space</kbd> replay</p>
       </div>
 
       <!-- Session complete → prompt for next subsection or all done -->

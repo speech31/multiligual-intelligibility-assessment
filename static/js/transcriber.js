@@ -68,7 +68,7 @@
 
     if (audioPlayer.src?.startsWith("blob:")) URL.revokeObjectURL(audioPlayer.src);
     audioPlayer.src = URL.createObjectURL(entry.file);
-    audioPlayer.load();
+    audioPlayer.play().catch(() => {});   // benign AbortError on rapid navigation
 
     transcriptionInput.value = results[idx]?.transcription || "";
     transcriptionInput.focus();
@@ -142,9 +142,28 @@
     if (currentIdx < fileEntries.length - 1) { currentIdx++; showFile(currentIdx); }
   });
 
-  transcriptionInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { e.preventDefault(); nextBtn.click(); }
-  });
+  // ----- Keyboard shortcuts (capture phase: fires before the input eats the key) -----
+  document.addEventListener("keydown", (e) => {
+    if (transcribeSection.classList.contains("hidden")) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    // Shift+Space → replay from start. (Plain space still types a character.)
+    if ((e.key === " " || e.code === "Space") && e.shiftKey) {
+      e.preventDefault();
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+      audioPlayer.play().catch(() => {});
+      return;
+    }
+
+    // Enter → next / submit. Ignore while a Korean (or any) IME is composing —
+    // pressing Enter mid-composition should commit the character, not advance.
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
+      e.preventDefault();
+      if (!nextBtn.classList.contains("hidden"))        nextBtn.click();
+      else if (!submitBtn.classList.contains("hidden")) submitBtn.click();
+    }
+  }, true);
 
   // ----- Score (all in JS, no server) -----
   submitBtn.addEventListener("click", async () => {

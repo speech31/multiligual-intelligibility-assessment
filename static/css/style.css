@@ -131,6 +131,52 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
   border-color: #3498db;
 }
 
+.mode-radio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mode-radio label {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #222;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.mode-radio input[type="radio"] {
+  margin: 0;
+}
+
+.shortcut-hint {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+.mode-instruction {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0.25rem 0 1rem;
+  min-height: 1.4em;
+}
+
+.shortcut-hint kbd {
+  font-family: inherit;
+  font-size: 0.78rem;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 0 0.3rem;
+  color: #333;
+}
+
 /* --------------------------------------------------------
    Recording mode
 -------------------------------------------------------- */
