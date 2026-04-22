@@ -349,6 +349,8 @@
   const saveFolderRow     = document.getElementById("save-folder-row");
   const saveFolderDisplay = document.getElementById("save-folder-display");
   const changeFolderBtn   = document.getElementById("change-folder-btn");
+  const chromeFolderHint  = document.getElementById("chrome-folder-hint");
+  if (HAS_FSA && chromeFolderHint) chromeFolderHint.classList.remove("hidden");
   const saveZipNowBtn     = document.getElementById("save-zip-now-btn");
   const recoveryBox       = document.getElementById("fallback-recovery");
   const recoveryTextEl    = document.getElementById("fallback-recovery-text");
@@ -818,7 +820,10 @@
 
     if (HAS_FSA) {
       try {
-        rootHandle     = await resolveSaveRoot();
+        // Always prompt for the save folder on Start Session. This makes the
+        // participant/session boundary explicit for the researcher and avoids
+        // silently writing into a folder from a previous patient.
+        rootHandle     = await resolveSaveRoot({ forcePicker: true });
         rootFolderName = rootHandle.name;
         updateSaveFolderDisplay(rootHandle);
       } catch (e) {
