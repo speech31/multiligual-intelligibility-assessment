@@ -40,11 +40,17 @@
           </select>
         </div>
         <button id="pick-folder-btn" class="btn btn-primary">Choose Folder</button>
-        <!-- Firefox fallback -->
-        <label id="fallback-label" class="hidden fallback-file-label">
-          Or select files manually:
-          <input type="file" id="fallback-input" accept=".wav" multiple />
-        </label>
+        <p class="privacy-note">This app is client-side only: there is no backend in this project that receives your WAV files or your typed transcriptions.</p>
+        <!-- Safari / Firefox fallback -->
+        <div id="fallback-label" class="hidden fallback-file-label">
+          <div class="fallback-options">
+            <button type="button" id="fallback-folder-btn" class="btn btn-primary">Choose Folder</button>
+            <button type="button" id="fallback-zip-btn" class="btn btn-secondary">Open ZIP</button>
+            <input type="file" id="fallback-folder-input" webkitdirectory directory style="display:none" />
+            <input type="file" id="fallback-zip-input" accept=".zip,application/zip" style="display:none" />
+            <input type="file" id="fallback-input" accept=".wav,audio/wav" multiple style="display:none" />
+          </div>
+        </div>
         <p id="picker-error" class="error hidden"></p>
         <p id="folder-name-display" class="status-msg"></p>
       </div>
@@ -104,6 +110,7 @@
   </main>
 
   <script src="static/js/words.js"></script>
+  <script src="static/js/vendor/jszip.min.js"></script>
   <script src="static/js/transcriber.js"></script>
 </body>
 </html>

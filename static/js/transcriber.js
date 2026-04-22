@@ -19,13 +19,18 @@
   const HAS_FSA = typeof window.showDirectoryPicker === "function";
 
   // ----- DOM -----
-  const pickerSection      = document.getElementById("picker-section");
-  const languageSelect     = document.getElementById("language");
-  const pickFolderBtn      = document.getElementById("pick-folder-btn");
-  const fallbackLabel      = document.getElementById("fallback-label");
-  const fallbackInput      = document.getElementById("fallback-input");
-  const pickerError        = document.getElementById("picker-error");
-  const folderNameDisplay  = document.getElementById("folder-name-display");
+  const pickerSection         = document.getElementById("picker-section");
+  const languageSelect        = document.getElementById("language");
+  const pickFolderBtn         = document.getElementById("pick-folder-btn");
+  const fallbackLabel         = document.getElementById("fallback-label");
+  const fallbackInput         = document.getElementById("fallback-input");
+  const fallbackFolderInput   = document.getElementById("fallback-folder-input");
+  const fallbackZipInput      = document.getElementById("fallback-zip-input");
+  const fallbackFolderBtn     = document.getElementById("fallback-folder-btn");
+  const fallbackZipBtn        = document.getElementById("fallback-zip-btn");
+  const fallbackFilesBtn      = document.getElementById("fallback-files-btn");
+  const pickerError           = document.getElementById("picker-error");
+  const folderNameDisplay     = document.getElementById("folder-name-display");
 
   const transcribeSection  = document.getElementById("transcribe-section");
   const sessionLabel       = document.getElementById("session-label");
@@ -132,13 +137,73 @@
   });
 
   // ----- Firefox fallback -----
+  // Wire the visible buttons to their hidden file inputs. Keeping the
+  // input separate (not nested inside a label) avoids a Safari quirk where
+  // clicks on a hidden nested input sometimes don't open the picker.
+  fallbackFolderBtn?.addEventListener("click", () => fallbackFolderInput?.click());
+  fallbackZipBtn?.addEventListener("click",    () => fallbackZipInput?.click());
+  fallbackFilesBtn?.addEventListener("click",  () => fallbackInput?.click());
+
+  // Manual-pick (multiple WAV files)
   fallbackInput?.addEventListener("change", async () => {
+    hideError(pickerError);
     const files = Array.from(fallbackInput.files).filter(f => f.name.toLowerCase().endsWith(".wav"));
+    if (!files.length) { showError(pickerError, "No WAV files selected."); return; }
     const entries = files
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(f => ({ name: f.name, file: f }));
     sessionLabel.textContent = "selected files";
     await loadEntries(entries);
+  });
+
+  // Folder-pick (Safari / Firefox): webkitdirectory gives us every file in the
+  // chosen directory tree; we keep only the .wav leaves.
+  fallbackFolderInput?.addEventListener("change", async () => {
+    hideError(pickerError);
+    const files = Array.from(fallbackFolderInput.files)
+      .filter(f => f.name.toLowerCase().endsWith(".wav"));
+    if (!files.length) { showError(pickerError, "No WAV files found in that folder."); return; }
+    const entries = files
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(f => ({ name: f.name, file: f }));
+    // Root folder name is the first path segment of any file's webkitRelativePath.
+    const rootName = (fallbackFolderInput.files[0]?.webkitRelativePath || "").split("/")[0];
+    sessionLabel.textContent = rootName || "selected folder";
+    await loadEntries(entries);
+  });
+
+  // ZIP upload: extract every .wav inside and feed it through loadEntries().
+  fallbackZipInput?.addEventListener("change", async () => {
+    hideError(pickerError);
+    const zipFile = fallbackZipInput.files?.[0];
+    if (!zipFile) return;
+    if (typeof JSZip === "undefined") {
+      showError(pickerError, "ZIP support unavailable (jszip failed to load).");
+      return;
+    }
+    folderNameDisplay.textContent = "Reading ZIP…";
+    try {
+      const zip    = await JSZip.loadAsync(zipFile);
+      const wavs   = Object.values(zip.files).filter(f => !f.dir && /\.wav$/i.test(f.name));
+      if (!wavs.length) {
+        folderNameDisplay.textContent = "";
+        showError(pickerError, "No WAV files found inside that ZIP.");
+        return;
+      }
+      const entries = await Promise.all(wavs.map(async f => {
+        const blob = await f.async("blob");
+        // Use the basename (strip zip subfolders) so file-name parsing still works.
+        const base = f.name.split("/").pop();
+        return { name: base, file: new File([blob], base, { type: "audio/wav" }) };
+      }));
+      entries.sort((a, b) => a.name.localeCompare(b.name));
+      folderNameDisplay.textContent = "";
+      sessionLabel.textContent = zipFile.name.replace(/\.zip$/i, "");
+      await loadEntries(entries);
+    } catch (e) {
+      folderNameDisplay.textContent = "";
+      showError(pickerError, "Could not read ZIP: " + e.message);
+    }
   });
 
   // ----- Navigation -----

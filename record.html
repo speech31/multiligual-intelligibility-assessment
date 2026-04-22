@@ -57,17 +57,21 @@
           <label for="speaker-id">Speaker ID</label>
           <input type="text" id="speaker-id" placeholder="e.g. s001" autocomplete="off" />
         </div>
-        <div class="form-row" id="save-folder-row">
-          <label>Save folder</label>
-          <div class="save-folder-control">
-            <span id="save-folder-display" class="session-label">Default: ~/Downloads/CHMIT/ (chosen on first start)</span>
-            <button type="button" id="change-folder-btn" class="btn btn-secondary">Change…</button>
-          </div>
-        </div>
         <!-- Subsection shown as read-only info, not an input -->
         <p id="subsection-info" class="session-label hidden"></p>
+        <div id="fallback-recovery" class="recovery-banner hidden" role="status">
+          <p id="fallback-recovery-text" class="recovery-banner-text"></p>
+          <div class="recovery-banner-actions">
+            <button type="button" id="fallback-recovery-download" class="btn btn-primary">Download recovered ZIP</button>
+            <button type="button" id="fallback-recovery-discard" class="btn btn-secondary">Discard</button>
+          </div>
+        </div>
         <button id="start-btn" class="btn btn-primary">Start Session</button>
         <p id="setup-error" class="error hidden"></p>
+        <p id="privacy-tools" class="privacy-tools hidden">
+          <button type="button" id="clear-local-data-btn" class="btn-link">Clear all cached audio in this browser</button>
+          <span id="clear-local-data-status" class="clear-status"></span>
+        </p>
       </div>
 
       <!-- Recording UI -->
@@ -82,6 +86,7 @@
         <audio id="preview-audio"></audio>
         <p id="upload-status" class="status-msg"></p>
         <div class="recording-toolbar">
+          <button type="button" id="save-zip-now-btn" class="btn btn-secondary hidden" title="Download a ZIP of all takes so far (also kept in the browser)">Save progress (ZIP) now</button>
           <button type="button" id="fullscreen-btn" class="btn btn-secondary">Fullscreen</button>
         </div>
         <p class="shortcut-hint"><kbd>z</kbd> previous · <kbd>x</kbd> save &amp; next · <kbd>c</kbd> re-record · <kbd>space</kbd> replay · <kbd>f</kbd> fullscreen</p>
@@ -104,6 +109,7 @@
 
   <script src="static/js/words.js"></script>
   <script src="static/js/audio.js"></script>
+  <script src="static/js/vendor/jszip.min.js"></script>
   <script src="static/js/recorder.js"></script>
 </body>
 </html>

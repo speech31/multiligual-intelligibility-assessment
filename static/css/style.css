@@ -164,6 +164,55 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
   font-size: 0.85rem;
 }
 
+.privacy-tools {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: #666;
+}
+
+.recovery-banner {
+  background: #fff8e1;
+  border: 1px solid #f0b200;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+}
+
+.recovery-banner-text {
+  margin: 0 0 0.5rem;
+  color: #6d4a00;
+}
+
+.recovery-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.recovery-banner-actions .btn {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #3498db;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.btn-link:hover { color: #2980b9; }
+
+.clear-status {
+  color: #27ae60;
+  font-weight: 600;
+  margin-left: 0.35rem;
+}
+
 /* Small, always-visible return-home control (visible even in fullscreen). */
 .home-fab {
   position: fixed;
