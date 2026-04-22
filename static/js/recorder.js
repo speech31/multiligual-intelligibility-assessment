@@ -171,12 +171,18 @@
 
   const headphoneRow = document.getElementById("headphone-row");
 
+  // TTS reference audio is only available for English right now; other
+  // languages skip both the headphone option and the TTS playback.
+  function hasReferenceAudio(l) { return l === "en"; }
+
   function updateHeadphoneVisibility() {
-    headphoneRow.classList.toggle("hidden", getSelectedMode() === "full");
+    const hide = getSelectedMode() === "full" || !hasReferenceAudio(languageSelect.value);
+    headphoneRow.classList.toggle("hidden", hide);
   }
 
   speakerIdInput.addEventListener("input", updateSubsectionHint);
   languageSelect.addEventListener("change", updateSubsectionHint);
+  languageSelect.addEventListener("change", updateHeadphoneVisibility);
   document.querySelectorAll('input[name="mode"]').forEach(el => {
     el.addEventListener("change", updateSubsectionHint);
     el.addEventListener("change", updateHeadphoneVisibility);
@@ -210,8 +216,8 @@
     uploadStatus.textContent = "";
     currentBlob = null;
 
-    if (mode === "full") {
-      // Developer mode — skip TTS, just record.
+    if (mode === "full" || !hasReferenceAudio(lang)) {
+      // Developer mode, or a language without reference audio — skip TTS.
       startRecording();
     } else if (headphoneMode === "with") {
       startRecording();
