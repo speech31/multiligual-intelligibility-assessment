@@ -29,6 +29,91 @@
   const HAS_FSA = typeof window.showDirectoryPicker === "function";
   const LEAD_IN_MS = 500;  // silence gap after press; word shown + recording starts together
   const WORD_SHOW_MS = 250;  // delay after showing the word before TTS starts, so the word lands first
+  const SAVE_FOLDER_NAME = "CHMIT";  // default subfolder created inside the user-picked location
+
+  // ----- IndexedDB: remember the user's save folder handle across sessions.
+  // FileSystemDirectoryHandles are structured-cloneable, so we can persist
+  // them in IndexedDB and reuse without re-prompting (Chrome/Edge).
+  const IDB_NAME = "chmit";
+  const IDB_STORE = "handles";
+  const IDB_KEY = "saveRoot";
+
+  function idbOpen() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore(IDB_STORE);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror  = () => reject(req.error);
+    });
+  }
+  async function idbGet(key) {
+    try {
+      const db = await idbOpen();
+      return await new Promise((resolve, reject) => {
+        const req = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror   = () => reject(req.error);
+      });
+    } catch { return null; }
+  }
+  async function idbSet(key, value) {
+    try {
+      const db = await idbOpen();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror    = () => reject(tx.error);
+      });
+    } catch {}
+  }
+  async function idbDel(key) {
+    try {
+      const db = await idbOpen();
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror    = () => reject(tx.error);
+      });
+    } catch {}
+  }
+
+  async function verifyPermission(handle) {
+    const opts = { mode: "readwrite" };
+    if ((await handle.queryPermission(opts)) === "granted")   return true;
+    if ((await handle.requestPermission(opts)) === "granted") return true;
+    return false;
+  }
+
+  // Chrome blocks picking well-known folders (Downloads, Desktop, home, …)
+  // directly, so the user must pick a regular subfolder. If they pick a
+  // folder already named CHMIT, use it as-is; otherwise try to create a
+  // CHMIT subfolder inside. Falls back to the picked folder if creating
+  // a subfolder isn't allowed.
+  async function pickSaveRoot() {
+    const picked = await window.showDirectoryPicker({
+      mode: "readwrite",
+      startIn: "downloads",
+    });
+    if (picked.name === SAVE_FOLDER_NAME) return picked;
+    try {
+      return await picked.getDirectoryHandle(SAVE_FOLDER_NAME, { create: true });
+    } catch {
+      return picked;
+    }
+  }
+
+  // Use the stored handle if still granted; otherwise prompt the picker.
+  async function resolveSaveRoot({ forcePicker = false } = {}) {
+    if (!forcePicker) {
+      const stored = await idbGet(IDB_KEY);
+      if (stored && await verifyPermission(stored)) return stored;
+    }
+    const handle = await pickSaveRoot();
+    await idbSet(IDB_KEY, handle);
+    return handle;
+  }
 
   // Map our language codes to BCP-47 tags for speechSynthesis.
   const TTS_LANG = {
@@ -95,6 +180,10 @@
   const doneDetail     = document.getElementById("done-detail");
   const doneFolderEl   = document.getElementById("done-folder");
   const nextSessionBtn = document.getElementById("next-session-btn");
+
+  const saveFolderRow     = document.getElementById("save-folder-row");
+  const saveFolderDisplay = document.getElementById("save-folder-display");
+  const changeFolderBtn   = document.getElementById("change-folder-btn");
 
   // ----- State -----
   let lang           = "en";
@@ -188,6 +277,40 @@
     el.addEventListener("change", updateHeadphoneVisibility);
   });
   updateHeadphoneVisibility();
+
+  // ----- Save-folder UI -----
+  function updateSaveFolderDisplay(handle) {
+    if (!saveFolderDisplay) return;
+    if (handle) {
+      saveFolderDisplay.textContent = `Saving to: ${handle.name}/`;
+    } else {
+      saveFolderDisplay.textContent = `Default: ~/Downloads/${SAVE_FOLDER_NAME}/ (chosen on first start)`;
+    }
+  }
+
+  (async function initSaveFolderDisplay() {
+    if (!HAS_FSA) {
+      if (saveFolderRow) saveFolderRow.classList.add("hidden");
+      return;
+    }
+    const stored = await idbGet(IDB_KEY);
+    // Show the remembered folder name without prompting for permission here;
+    // permission will be re-confirmed when the user clicks Start Session.
+    updateSaveFolderDisplay(stored || null);
+  })();
+
+  if (changeFolderBtn) {
+    changeFolderBtn.addEventListener("click", async () => {
+      try {
+        const handle = await resolveSaveRoot({ forcePicker: true });
+        updateSaveFolderDisplay(handle);
+      } catch (e) {
+        if (e.name !== "AbortError") {
+          showError(setupError, "Could not change folder: " + e.message);
+        }
+      }
+    });
+  }
 
   async function saveLocalFSA(fileName, arrayBuffer) {
     const fh = await saveDirHandle.getFileHandle(fileName, { create: true });
@@ -352,6 +475,37 @@
     }
   }
 
+  // ----- Fullscreen -----
+  const fullscreenBtn = document.getElementById("fullscreen-btn");
+
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (!isFullscreen()) {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (req) await req.call(el);
+      } else {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) await exit.call(document);
+      }
+    } catch {
+      // user-gesture or permission errors — silently ignore
+    }
+  }
+
+  function updateFullscreenBtnLabel() {
+    if (!fullscreenBtn) return;
+    fullscreenBtn.textContent = isFullscreen() ? "Exit fullscreen" : "Fullscreen";
+  }
+
+  if (fullscreenBtn) fullscreenBtn.addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", updateFullscreenBtnLabel);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenBtnLabel);
+
   // ----- Keyboard shortcuts -----
   document.addEventListener("keydown", (e) => {
     if (recordingSection.classList.contains("hidden")) return;
@@ -361,6 +515,7 @@
     if (k === "x")                                 { e.preventDefault(); handleSaveAndNext(); }
     else if (k === "z")                            { e.preventDefault(); handleBack(); }
     else if (k === "c")                            { e.preventDefault(); handleReRecord(); }
+    else if (k === "f")                            { e.preventDefault(); toggleFullscreen(); }
     else if (e.key === " " || e.code === "Space")  { e.preventDefault(); handleReplay(); }
   });
 
@@ -401,8 +556,9 @@
 
     if (HAS_FSA) {
       try {
-        rootHandle     = await window.showDirectoryPicker({ mode: "readwrite" });
+        rootHandle     = await resolveSaveRoot();
         rootFolderName = rootHandle.name;
+        updateSaveFolderDisplay(rootHandle);
       } catch (e) {
         if (e.name === "AbortError") return;
         showError(setupError, "Could not open folder: " + e.message); return;

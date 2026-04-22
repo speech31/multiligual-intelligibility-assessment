@@ -39,18 +39,26 @@
   const submitBtn          = document.getElementById("submit-btn");
   const transcribeStatus   = document.getElementById("transcribe-status");
 
-  const resultsSection = document.getElementById("results-section");
-  const scoreDisplay   = document.getElementById("score-display");
-  const correctDisplay = document.getElementById("correct-display");
-  const totalDisplay   = document.getElementById("total-display");
-  const resultsTbody   = document.querySelector("#results-table tbody");
-  const downloadCsvBtn = document.getElementById("download-csv-btn");
+  const resultsSection       = document.getElementById("results-section");
+  const resultsNote          = document.getElementById("results-note");
+  const scoreDisplay         = document.getElementById("score-display");
+  const correctDisplay       = document.getElementById("correct-display");
+  const totalDisplay         = document.getElementById("total-display");
+  const resultsTbody         = document.querySelector("#results-table tbody");
+  const downloadCsvBtn       = document.getElementById("download-csv-btn");
+  const scoreNowBtn          = document.getElementById("score-now-btn");
+  const backToTranscribeBtn  = document.getElementById("back-to-transcribe-btn");
 
   // ----- State -----
   let fileEntries = [];    // [{ name, file }]
   let currentIdx  = 0;
+  let maxVisited  = 0;     // furthest index ever reached in the current session
   let results     = [];    // [{ file_name, transcription }]
   let scoreData   = null;
+  // Manual Correct/Wrong overrides persisted across preview ↔ transcribe
+  // cycles. Keyed by file_name. If the transcription later changes, the
+  // override is dropped (see computeRows).
+  const overrides = {};    // { [file_name]: { correct: 0|1, forTranscription: string } }
 
   // ----- Helpers -----
   function showError(el, msg) { el.textContent = msg; el.classList.remove("hidden"); }
@@ -62,6 +70,7 @@
   }
 
   function showFile(idx) {
+    maxVisited = Math.max(maxVisited, idx);
     const entry = fileEntries[idx];
     fileIndexEl.textContent  = idx + 1;
     fileNameLabel.textContent = entry.name;
@@ -85,6 +94,7 @@
     fileEntries = entries;
     results     = entries.map(e => ({ file_name: e.name, transcription: "" }));
     currentIdx  = 0;
+    maxVisited  = 0;
     fileTotalEl.textContent = entries.length;
     pickerSection.classList.add("hidden");
     transcribeSection.classList.remove("hidden");
@@ -166,6 +176,102 @@
   }, true);
 
   // ----- Score (all in JS, no server) -----
+  // Build scored rows from the first `limit` entries of `results` (defaults
+  // to all). Blank transcriptions are kept as blank rows and auto-score as 0.
+  // Any manual Correct/Wrong override whose captured transcription still
+  // matches the current one is applied; otherwise the auto-score is used.
+  function computeRows(limit) {
+    const end = limit == null ? results.length : Math.min(limit, results.length);
+    return results.slice(0, end).map(r => {
+      const base    = r.file_name.replace(/\.wav$/i, "");
+      const m       = /set\d+_col\d+/.exec(base);
+      const wordId  = m ? m[0] : base;
+      const canonical = getCanonical(wordId, languageSelect.value);
+      const trimmed   = r.transcription.trim();
+      let correct = trimmed.length > 0 &&
+                    trimmed.toLowerCase() === canonical.toLowerCase() ? 1 : 0;
+      const o = overrides[r.file_name];
+      if (o && o.forTranscription === trimmed) correct = o.correct;
+      return { file_name: r.file_name, canonical, transcription: r.transcription, correct };
+    });
+  }
+
+  // Re-compute score totals from scoreData.rows and repaint the results table.
+  // Called on initial scoring and after each manual Correct/Wrong override.
+  function renderResults() {
+    if (!scoreData) return;
+    const total      = scoreData.rows.length;
+    const numCorrect = scoreData.rows.reduce((s, r) => s + r.correct, 0);
+    const score      = total ? numCorrect / total : 0;
+    scoreData.correct = numCorrect;
+    scoreData.score   = score;
+
+    scoreDisplay.textContent   = (score * 100).toFixed(1) + "%";
+    correctDisplay.textContent = numCorrect;
+    totalDisplay.textContent   = total;
+
+    resultsTbody.innerHTML = "";
+    scoreData.rows.forEach((row, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.file_name}</td>
+        <td>${row.canonical}</td>
+        <td>${row.transcription || "<em>—</em>"}</td>
+        <td>
+          <button type="button" class="score-toggle correct-${row.correct}" data-idx="${i}"
+                  title="Click to override">
+            ${row.correct ? "Correct" : "Wrong"}
+          </button>
+        </td>
+      `;
+      resultsTbody.appendChild(tr);
+    });
+  }
+
+  // Click anywhere on a score button to flip its verdict. The override is
+  // captured against the transcription at the moment of override so that a
+  // later change to that field correctly drops the override.
+  resultsTbody.addEventListener("click", (e) => {
+    const btn = e.target.closest(".score-toggle");
+    if (!btn || !scoreData) return;
+    const idx = parseInt(btn.dataset.idx, 10);
+    const row = scoreData.rows[idx];
+    row.correct = row.correct ? 0 : 1;
+    overrides[row.file_name] = {
+      correct: row.correct,
+      forTranscription: (row.transcription || "").trim(),
+    };
+    renderResults();
+  });
+
+  // ----- "Score now" preview: score everything up through the furthest
+  // word the user has navigated to. Blank entries in that range are kept
+  // as blank rows and counted as wrong (0).
+  scoreNowBtn.addEventListener("click", () => {
+    saveCurrentInput();
+    const limit = maxVisited + 1;
+    const rows  = computeRows(limit);
+    if (!rows.length) {
+      transcribeStatus.textContent = "Navigate to at least one word first.";
+      return;
+    }
+    scoreData = { rows, score: 0, correct: 0, total: rows.length, preview: true };
+    transcribeSection.classList.add("hidden");
+    resultsSection.classList.remove("hidden");
+    backToTranscribeBtn.classList.remove("hidden");
+    if (resultsNote) {
+      resultsNote.textContent = `Preview: results through word ${limit} of ${fileEntries.length}.`;
+    }
+    renderResults();
+  });
+
+  // ----- Back to transcribing (keeps overrides around).
+  backToTranscribeBtn.addEventListener("click", () => {
+    resultsSection.classList.add("hidden");
+    transcribeSection.classList.remove("hidden");
+    showFile(currentIdx);
+  });
+
   submitBtn.addEventListener("click", async () => {
     saveCurrentInput();
 
@@ -175,39 +281,14 @@
     submitBtn.disabled = true;
     transcribeStatus.textContent = "Scoring…";
 
-    const rows = results.map(r => {
-      // Extract word_id: "speaker-set01_col07.wav" → "set01_col07"
-      const base    = r.file_name.replace(/\.wav$/i, "");
-      const m       = /set\d+_col\d+/.exec(base);
-      const wordId  = m ? m[0] : base;
-      const canonical = getCanonical(wordId, languageSelect.value);   // words.js
-      const correct   = r.transcription.trim().toLowerCase() === canonical.toLowerCase() ? 1 : 0;
-      return { file_name: r.file_name, canonical, transcription: r.transcription, correct };
-    });
-
-    const total      = rows.length;
-    const numCorrect = rows.reduce((s, r) => s + r.correct, 0);
-    const score      = total ? (numCorrect / total) : 0;
-
-    scoreData = { rows, score, correct: numCorrect, total };
+    const rows = computeRows();
+    scoreData = { rows, score: 0, correct: 0, total: rows.length, preview: false };
 
     transcribeSection.classList.add("hidden");
     resultsSection.classList.remove("hidden");
-    scoreDisplay.textContent   = (score * 100).toFixed(1) + "%";
-    correctDisplay.textContent = numCorrect;
-    totalDisplay.textContent   = total;
-
-    resultsTbody.innerHTML = "";
-    rows.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${row.file_name}</td>
-        <td>${row.canonical}</td>
-        <td>${row.transcription || "<em>—</em>"}</td>
-        <td class="correct-${row.correct}">${row.correct ? "Correct" : "Wrong"}</td>
-      `;
-      resultsTbody.appendChild(tr);
-    });
+    backToTranscribeBtn.classList.remove("hidden");
+    if (resultsNote) resultsNote.textContent = "";
+    renderResults();
 
     submitBtn.disabled = false;
     transcribeStatus.textContent = "";

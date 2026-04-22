@@ -14,6 +14,7 @@
       <a href="transcribe.html">Transcribe</a>
     </div>
   </nav>
+  <a href="index.html" class="home-fab" title="Return to home">← Home</a>
   <main>
     <div class="card">
       <h2>Recording Mode</h2>
@@ -41,7 +42,7 @@
         <div class="form-row">
           <label>Mode</label>
           <div class="mode-radio">
-            <label><input type="radio" name="mode" value="default" checked /> Research Mode (50 words)</label>
+            <label><input type="radio" name="mode" value="default" checked /> Normal Mode (50 words)</label>
             <label><input type="radio" name="mode" value="full" /> Developer Mode (600 words)</label>
           </div>
         </div>
@@ -55,6 +56,13 @@
         <div class="form-row">
           <label for="speaker-id">Speaker ID</label>
           <input type="text" id="speaker-id" placeholder="e.g. s001" autocomplete="off" />
+        </div>
+        <div class="form-row" id="save-folder-row">
+          <label>Save folder</label>
+          <div class="save-folder-control">
+            <span id="save-folder-display" class="session-label">Default: ~/Downloads/CHMIT/ (chosen on first start)</span>
+            <button type="button" id="change-folder-btn" class="btn btn-secondary">Change…</button>
+          </div>
         </div>
         <!-- Subsection shown as read-only info, not an input -->
         <p id="subsection-info" class="session-label hidden"></p>
@@ -73,7 +81,10 @@
 
         <audio id="preview-audio"></audio>
         <p id="upload-status" class="status-msg"></p>
-        <p class="shortcut-hint"><kbd>z</kbd> previous · <kbd>x</kbd> save &amp; next · <kbd>c</kbd> re-record · <kbd>space</kbd> replay</p>
+        <div class="recording-toolbar">
+          <button type="button" id="fullscreen-btn" class="btn btn-secondary">Fullscreen</button>
+        </div>
+        <p class="shortcut-hint"><kbd>z</kbd> previous · <kbd>x</kbd> save &amp; next · <kbd>c</kbd> re-record · <kbd>space</kbd> replay · <kbd>f</kbd> fullscreen</p>
       </div>
 
       <!-- Session complete → prompt for next subsection or all done -->

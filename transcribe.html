@@ -14,6 +14,7 @@
       <a href="transcribe.html" class="active">Transcribe</a>
     </div>
   </nav>
+  <a href="index.html" class="home-fab" title="Return to home">← Home</a>
   <main>
     <div class="card">
       <h2>Transcription Mode</h2>
@@ -65,10 +66,15 @@
 
         <div class="nav-buttons">
           <button id="prev-btn" class="btn btn-secondary" disabled>Previous</button>
-          <button id="next-btn" class="btn btn-primary">Next</button>
+          <div class="nav-right">
+            <button id="next-btn" class="btn btn-primary">Next</button>
+            <button id="score-now-btn" class="btn btn-secondary">Score now</button>
+          </div>
         </div>
 
-        <button id="submit-btn" class="btn btn-primary hidden">Save &amp; Score</button>
+        <div class="transcribe-actions">
+          <button id="submit-btn" class="btn btn-primary hidden">Save &amp; Score</button>
+        </div>
         <p id="transcribe-status" class="status-msg"></p>
         <p class="shortcut-hint"><kbd>enter</kbd> next · <kbd>shift</kbd>+<kbd>space</kbd> replay (audio auto-plays on navigation)</p>
       </div>
@@ -76,6 +82,7 @@
       <!-- Results -->
       <div id="results-section" class="hidden">
         <h3>Results</h3>
+        <p id="results-note" class="session-label"></p>
         <div class="score-box">
           Score: <strong id="score-display"></strong>
           (<span id="correct-display"></span> / <span id="total-display"></span> correct)
@@ -86,8 +93,12 @@
           </thead>
           <tbody></tbody>
         </table>
-        <button id="download-csv-btn" class="btn btn-secondary">Download CSV</button>
-        <a href="transcribe.html" class="btn btn-secondary" style="margin-left:0.5rem">Transcribe Another</a>
+        <p class="override-hint">You can manually change a score by clicking its <strong>Correct</strong> / <strong>Wrong</strong> label.</p>
+        <div class="results-actions">
+          <button id="back-to-transcribe-btn" class="btn btn-secondary">Back to transcribing</button>
+          <button id="download-csv-btn" class="btn btn-secondary">Download CSV</button>
+          <a href="transcribe.html" class="btn btn-secondary">Transcribe Another</a>
+        </div>
       </div>
     </div>
   </main>

@@ -152,6 +152,126 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
   margin: 0;
 }
 
+.save-folder-control {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.save-folder-control .btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Small, always-visible return-home control (visible even in fullscreen). */
+.home-fab {
+  position: fixed;
+  top: 3.5rem;
+  left: 1rem;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2c3e50;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.home-fab:hover {
+  background: #fff;
+  opacity: 1;
+}
+
+/* In fullscreen, fade the button so it doesn't distract but stays reachable. */
+:fullscreen .home-fab,
+:-webkit-full-screen .home-fab {
+  opacity: 0.25;
+}
+
+:fullscreen .home-fab:hover,
+:-webkit-full-screen .home-fab:hover {
+  opacity: 1;
+}
+
+.recording-toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.recording-toolbar .btn {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+/* Fullscreen mode — distraction-free view for users with brain injuries
+   or visual challenges. Only the word is shown on a plain background. */
+:fullscreen,
+:-webkit-full-screen {
+  background: #fff;
+}
+
+:fullscreen nav,
+:-webkit-full-screen nav {
+  display: none;
+}
+
+:fullscreen main,
+:-webkit-full-screen main {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+:fullscreen .card,
+:-webkit-full-screen .card {
+  background: #fff;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Hide everything inside the card except the recording section itself. */
+:fullscreen .card > *:not(#recording-section),
+:-webkit-full-screen .card > *:not(#recording-section) {
+  display: none;
+}
+
+/* Hide everything inside recording-section except the word itself. */
+:fullscreen #recording-section > *,
+:-webkit-full-screen #recording-section > * {
+  display: none;
+}
+
+:fullscreen #recording-section,
+:-webkit-full-screen #recording-section {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:fullscreen #recording-section .word-display,
+:-webkit-full-screen #recording-section .word-display {
+  display: block;
+  font-size: clamp(8rem, 22vw, 20rem);
+  margin: 0;
+  min-height: 0;
+  line-height: 1.1;
+  text-align: center;
+}
+
 .shortcut-hint {
   text-align: center;
   font-size: 0.82rem;
@@ -257,8 +377,17 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
 
 .nav-buttons {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 1rem;
   margin: 1rem 0;
+}
+
+.nav-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
 }
 
 .score-box {
@@ -285,6 +414,35 @@ tr:nth-child(even) td { background: #fafafa; }
 
 td.correct-1 { color: #27ae60; font-weight: 700; }
 td.correct-0 { color: #e74c3c; font-weight: 700; }
+
+.score-toggle {
+  border: 1px solid currentColor;
+  background: transparent;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.score-toggle.correct-1 { color: #27ae60; }
+.score-toggle.correct-0 { color: #e74c3c; }
+.score-toggle:hover { background: rgba(0, 0, 0, 0.05); }
+
+.transcribe-actions,
+.results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.override-hint {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.75rem 0 0.5rem;
+  text-align: center;
+}
 
 .csv-note {
   font-size: 0.85rem;
