@@ -337,6 +337,8 @@
   const wordDisplay      = document.getElementById("word-display");
   const modeInstruction  = document.getElementById("mode-instruction");
   const saveFolderNote   = document.getElementById("save-folder-note");
+  const zipFallbackHint  = document.getElementById("zip-fallback-hint");
+  if (ZIP_FALLBACK && zipFallbackHint) zipFallbackHint.classList.remove("hidden");
   const previewAudio     = document.getElementById("preview-audio");
   const uploadStatus     = document.getElementById("upload-status");
 
@@ -900,9 +902,12 @@
     sessionIdLabel.textContent = mode === "default"
       ? `${safeSpeaker} · ${LANGUAGES[lang]}`
       : `${safeSpeaker} · ${LANGUAGES[lang]} · ${subLabel} (${subsection}/${NUM_SUBSECTIONS})`;
+    // Top-of-session label: only the concrete save path for FSA browsers;
+    // Safari/FF get nothing here (the ZIP-flow explanation already lives on
+    // the setup page, next to the Mode selector).
     saveFolderNote.textContent = HAS_FSA && saveDirHandle
       ? `Saving to: ${rootFolderName}/${sessionId}/`
-      : "Each take is backed up in this browser. If you close or leave this tab mid-session, we try to download a ZIP immediately (same CHMIT/… layout). You can also use “Save progress (ZIP) now”. The final ZIP still downloads when you finish all words.";
+      : "";
 
     if (saveZipNowBtn) saveZipNowBtn.classList.toggle("hidden", !ZIP_FALLBACK);
 
