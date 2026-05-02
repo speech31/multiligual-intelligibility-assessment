@@ -251,10 +251,15 @@
       const base    = r.file_name.replace(/\.wav$/i, "");
       const m       = /set\d+_col\d+/.exec(base);
       const wordId  = m ? m[0] : base;
-      const canonical = getCanonical(wordId, languageSelect.value);
-      const trimmed   = r.transcription.trim();
-      let correct = trimmed.length > 0 &&
-                    trimmed.toLowerCase() === canonical.toLowerCase() ? 1 : 0;
+      const lang    = languageSelect.value;
+      const { main: canonical, reading } = getWordParts(wordId, lang);
+      const trimmed  = r.transcription.trim();
+      const tLower   = trimmed.toLowerCase();
+      // Display kanji only; still accept hiragana reading as correct on score.
+      let correct = trimmed.length > 0 && (
+        tLower === canonical.toLowerCase() ||
+        (reading != null && tLower === reading.toLowerCase())
+      ) ? 1 : 0;
       const o = overrides[r.file_name];
       if (o && o.forTranscription === trimmed) correct = o.correct;
       return { file_name: r.file_name, canonical, transcription: r.transcription, correct };
