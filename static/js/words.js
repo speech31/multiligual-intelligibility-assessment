@@ -272,8 +272,8 @@ const WORD_DATA = {
     /* set 13 */ ["ando", "cubo", "dudo", "hubo", "humo", "curso", "mando", "mundo", "pudo", "puño", "sobra", "une"],
     /* set 14 */ ["banda", "boda", "codo", "cupo", "fondo", "grado", "hada", "lodo", "cura", "moda", "modo", "soda"],
     /* set 15 */ ["ajo", "caja", "ceja", "deja", "lejos", "lino", "lujo", "paja", "queja", "quema", "viajo", "viejo"],
-    /* set 16 */ ["alas", "balas", "balsa", "bolas", "bolsa", "botas", "botes", "colas", "jaulas", "olas", "solas", "soles"],
-    /* set 17 */ ["cresta", "cesta", "cuesta", "dedo", "duro", "fiesta", "presta", "puesta", "resta", "resto", "reto", "siesta"],
+    /* set 16 */ ["alas", "balas", "balsa", "bolas", "bolsa", "botas", "botes", "colas", "jaulas", "olas", "solas", "dales"],
+    /* set 17 */ ["cresta", "cesta", "cuesta", "dedo", "duro", "fiesta", "presta", "puesta", "sexta", "resto", "reto", "siesta"],
     /* set 18 */ ["canto", "dueño", "lana", "llanta", "larva", "manga", "mango", "mano", "manto", "plano", "santo", "sueño"],
     /* set 19 */ ["baja", "barra", "barro", "búho", "burro", "caña", "cera", "cero", "faja", "garra", "sala", "cerro"],
     /* set 20 */ ["grande", "granja", "grasa", "gringo", "grito", "hambre", "hombre", "hombro", "mugre", "negro", "sangre", "sombra"],
@@ -287,16 +287,16 @@ const WORD_DATA = {
     /* set 28 */ ["banco", "blanco", "brindo", "bueno", "cinco", "hipo", "lomo", "rindo", "sueno", "tono", "trono", "trueno"],
     /* set 29 */ ["barca", "barco", "bata", "lata", "marca", "pato", "plomo", "pluma", "poste", "puerco", "puesto", "puma"],
     /* set 30 */ ["canso", "cuerda", "cuero", "ganso", "muerte", "muerto", "pares", "parta", "pera", "perla", "puerto", "tarta"],
-    /* set 31 */ ["hable", "libre", "nube", "pobre", "porte", "potro", "sabe", "sable", "sapo", "sopla", "sube", "sopa"],
+    /* set 31 */ ["hable", "libre", "nube", "pobre", "porte", "potro", "sabe", "supo", "sapo", "sopla", "sube", "sopa"],
     /* set 32 */ ["bicho", "chivo", "moho", "monta", "pila", "pino", "piso", "raja", "rico", "rojo", "toro", "vino"],
     /* set 33 */ ["acto", "amo", "apto", "aro", "pacto", "paro", "pasta", "pasto", "rapto", "rastro", "rostro", "vago"],
     /* set 34 */ ["celda", "cerca", "cerdo", "circo", "cuota", "dado", "dardo", "nado", "nata", "nota", "persa", "presa"],
     /* set 35 */ ["calvo", "chico", "choca", "clavo", "lavo", "niña", "palco", "pica", "piña", "pipa", "saco", "salgo"],
-    /* set 36 */ ["capa", "cara", "porta", "carta", "causa", "claro", "lazo", "mapa", "rara", "raza", "taza", "trata"],
+    /* set 36 */ ["capa", "cara", "puerta", "carta", "causa", "claro", "lazo", "mapa", "rara", "raza", "taza", "trata"],
     /* set 37 */ ["gasto", "gorro", "guerra", "hielo", "hierro", "masas", "palas", "palos", "pozo", "rasgo", "sierra", "tallas"],
     /* set 38 */ ["bella", "beso", "falda", "falla", "falso", "falta", "gala", "salsa", "salva", "vela", "vello", "verso"],
     /* set 39 */ ["abro", "cabo", "cabra", "carro", "cobre", "cubre", "grabo", "jala", "jarra", "tapa", "traba", "tropa"],
-    /* set 40 */ ["arco", "arde", "ares", "artes", "asco", "disco", "harto", "parque", "taco", "tacto", "tanque", "tarde"],
+    /* set 40 */ ["arco", "arde", "bares", "artes", "asco", "disco", "harto", "parque", "taco", "tacto", "tanque", "tarde"],
     /* set 41 */ ["centro", "churro", "ciento", "cierro", "pierna", "pieza", "torpe", "truco", "tubo", "tumba", "turco", "tuve"],
     /* set 42 */ ["dona", "doña", "fina", "finja", "lona", "luna", "luzca", "mula", "multa", "uña", "urna", "usa"],
     /* set 43 */ ["ancho", "cancha", "caño", "ceño", "daño", "flecha", "gancho", "lancha", "mancha", "marcho", "panza", "plancha"],
@@ -305,8 +305,8 @@ const WORD_DATA = {
     /* set 46 */ ["bobo", "chorro", "choza", "chupa", "doce", "domo", "dulce", "torre", "tose", "trece", "trenes", "trenzas"],
     /* set 47 */ ["bronce", "brote", "calle", "labio", "lame", "lanza", "once", "pinza", "quince", "quinta", "sabio", "saque"],
     /* set 48 */ ["brisa", "broma", "flama", "flanco", "flauta", "ropa", "ronca", "flota", "freno", "frito", "frota", "rosa"],
-    /* set 49 */ ["brillo", "crío", "días", "fío", "fríos", "grillo", "guías", "líos", "pío", "río", "tíos", "trío"],
-    /* set 50 */ ["chavo", "chelo", "chino", "cuello", "hueso", "huevo", "lleno", "lleva", "mato", "muerdo", "muero", "muro"]
+    /* set 49 */ ["brillo", "crías", "días", "fías", "fríos", "grillo", "guías", "líos", "pío", "río", "tíos", "trío"],
+    /* set 50 */ ["chavo", "checo", "chino", "cuello", "hueso", "huevo", "lleno", "lleva", "mato", "muerdo", "muero", "muro"]
   ],
 
   fi: [
@@ -602,7 +602,7 @@ const WORD_DATA = {
     /* set 26 */ ["ранка", "банка", "рамка", "самка", "сумка", "сушка", "мушка", "пушка", "крупа", "туча", "куча", "круча"],
     /* set 27 */ ["крыса", "краса", "кража", "раса", "ряса", "оса", "она", "зона", "зола", "зоря", "затем", "затечь"],
     /* set 28 */ ["прокол", "прикол", "покой", "покос", "помост", "помол", "помочь", "помощь", "помет", "помесь", "помои", "полет"],
-    /* set 29 */ ["полный", "полый", "вольный", "вольно", "больно", "полно", "полон", "поджох", "подвод", "отвод", "отход", "выход"],
+    /* set 29 */ ["полный", "полый", "вольный", "вольно", "больно", "полно", "полон", "поджог", "подвод", "отвод", "отход", "выход"],
     /* set 30 */ ["струна", "страна", "странно", "страстно", "трава", "трата", "триста", "киста", "тропа", "рота", "рвота", "квота"],
     /* set 31 */ ["скука", "скула", "кулак", "скулить", "скупить", "скупой", "тупой", "тугой", "туго", "турник", "турнир", "скалить"],
     /* set 32 */ ["скачка", "сказка", "смазка", "скатка", "скачать", "скучать", "начать", "зачать", "печать", "печаль", "мычать", "рычать"],
@@ -802,31 +802,29 @@ const WORD_DATA = {
  *
  *   "default" — numSets words: one per set, each with a random column
  *               (diverse phonetic coverage in a short session).
- *   "full"    — every (set × column) cell exactly once, ordered by column block:
- *               column 1 (sets shuffled), then column 2, ...
+ *   "full"    — every (set × column) cell exactly once in deterministic order:
+ *               col 1 (set 1, set 2, ..., set N), then col 2, then col 3, ...
  *               e.g. English = 12 × 50 = 600 words.
  */
 function getSessionWords(lang = "en", mode = "default") {
   const { numSets, numSubsections } = getLangConfig(lang);
-  const shuffleRows = () => {
+  const id = (row, col) =>
+    `set${String(row).padStart(2, "0")}_col${String(col).padStart(2, "0")}`;
+
+  if (mode === "default") {
     const rows = Array.from({ length: numSets }, (_, i) => i + 1);
     for (let i = rows.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [rows[i], rows[j]] = [rows[j], rows[i]];
     }
-    return rows;
-  };
-  const id = (row, col) =>
-    `set${String(row).padStart(2, "0")}_col${String(col).padStart(2, "0")}`;
-
-  if (mode === "default") {
-    return shuffleRows().map(row =>
+    return rows.map(row =>
       id(row, Math.floor(Math.random() * numSubsections) + 1)
     );
   }
+  // Developer mode: deterministic, set order ascending within each column.
   const out = [];
   for (let col = 1; col <= numSubsections; col++) {
-    for (const row of shuffleRows()) out.push(id(row, col));
+    for (let row = 1; row <= numSets; row++) out.push(id(row, col));
   }
   return out;
 }

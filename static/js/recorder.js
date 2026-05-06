@@ -269,6 +269,7 @@
     fi: { dir: "CHMIT-Finnish", subdir: false, case: "lower" },
     el: { dir: "CHMIT-Greek",   subdir: true,  case: "lower" },
     es: { dir: "CHMIT-Spanish", subdir: true,  case: "lower" },
+    ru: { dir: "CHMIT-Russian", subdir: false, case: "lower" },
   };
 
   function referenceAudioUrl(wordId, langCode) {
