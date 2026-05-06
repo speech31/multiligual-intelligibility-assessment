@@ -62,8 +62,6 @@
         <p id="zip-fallback-hint" class="folder-hint hidden">
           💡 <strong>Tip:</strong> Each recording is backed up in this browser. If you close or leave this tab mid-session, you can download a ZIP file of your recordings when you return to this page. To clear these cached recordings at any time, click <strong>"Clear all cached audio in this browser"</strong>. You can also use <strong>"Save progress (ZIP) now"</strong> during recording.
         </p>
-        <!-- Subsection shown as read-only info, not an input -->
-        <p id="subsection-info" class="session-label hidden"></p>
         <p id="chrome-folder-hint" class="folder-hint hidden">
           💡 <strong>Tip:</strong> When the folder picker opens, create a new folder named <code>CHMIT</code> inside Downloads (or anywhere you like) and select it.
         </p>
@@ -100,14 +98,13 @@
         <p class="shortcut-hint"><kbd>z</kbd> previous · <kbd>x</kbd> save &amp; next · <kbd>c</kbd> re-record · <kbd>space</kbd> replay · <kbd>f</kbd> fullscreen</p>
       </div>
 
-      <!-- Session complete → prompt for next subsection or all done -->
+      <!-- Session complete -->
       <div id="done-section" class="hidden">
         <div class="done-box">
           <h3 id="done-title">Session complete!</h3>
           <p id="done-detail"></p>
           <p>Files saved in: <code id="done-folder"></code></p>
           <div style="display:flex;gap:1rem;justify-content:center;margin-top:1rem">
-            <a href="record.html" id="next-session-btn" class="btn btn-primary hidden">Start Next Session</a>
             <a href="index.html" class="btn btn-secondary">Home</a>
           </div>
         </div>
@@ -115,9 +112,9 @@
     </div>
   </main>
 
-  <script src="static/js/words.js?v=5"></script>
+  <script src="static/js/words.js?v=9"></script>
   <script src="static/js/audio.js?v=3"></script>
   <script src="static/js/vendor/jszip.min.js"></script>
-  <script src="static/js/recorder.js?v=7"></script>
+  <script src="static/js/recorder.js?v=17"></script>
 </body>
 </html>
