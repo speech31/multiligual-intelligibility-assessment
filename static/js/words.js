@@ -272,7 +272,7 @@ const WORD_DATA = {
     /* set 13 */ ["ando", "cubo", "dudo", "hubo", "humo", "curso", "mando", "mundo", "pudo", "puño", "sobra", "une"],
     /* set 14 */ ["banda", "boda", "codo", "cupo", "fondo", "grado", "hada", "lodo", "cura", "moda", "modo", "soda"],
     /* set 15 */ ["ajo", "caja", "ceja", "deja", "lejos", "lino", "lujo", "paja", "queja", "quema", "viajo", "viejo"],
-    /* set 16 */ ["alas", "balas", "balsa", "bolas", "bolsa", "botas", "botes", "colas", "jaulas", "olas", "solas", "dales"],
+    /* set 16 */ ["alas", "balas", "balsa", "bolas", "bolsa", "botas", "botes", "colas", "jaulas", "olas", "dales", "solas"],
     /* set 17 */ ["cresta", "cesta", "cuesta", "dedo", "duro", "fiesta", "presta", "puesta", "sexta", "resto", "reto", "siesta"],
     /* set 18 */ ["canto", "dueño", "lana", "llanta", "larva", "manga", "mango", "mano", "manto", "plano", "santo", "sueño"],
     /* set 19 */ ["baja", "barra", "barro", "búho", "burro", "caña", "cera", "cero", "faja", "garra", "sala", "cerro"],
@@ -359,7 +359,7 @@ const WORD_DATA = {
     /* set 47 */ ["riisi", "risti", "tukka", "rankka", "sankka", "satu", "savu", "sävy", "katu", "kriisi", "kukka", "sukka"],
     /* set 48 */ ["mutka", "matka", "syödä", "syöpä", "sello", "sellu", "seula", "sielu", "kaula", "keula", "aula", "kello"],
     /* set 49 */ ["taulu", "liha", "loppu", "lilja", "linja", "linna", "viha", "piha", "lippu", "luotto", "luonto", "minä"],
-    /* set 50 */ ["paha", "sora", "kirkko", "meikki", "kaato", "häät", "perho", "pha", "paheta", "vuotaa", "puoltaa", "jousta"]
+    /* set 50 */ ["paha", "sora", "kirkko", "meikki", "kaato", "häät", "perho", "piha", "paheta", "vuotaa", "puoltaa", "jousta"]
   ],
 
   sv: [
