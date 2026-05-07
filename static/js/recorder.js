@@ -318,13 +318,15 @@
   }
 
   // Try the bundled recording first; if missing or it errors, fall back to TTS.
-  async function playWordAudio(wordId, text, langCode) {
+  // In developer mode we pass fileOnly=true to skip the TTS fallback (TTS for
+  // 600 words is too slow), so a missing/broken file just means silence.
+  async function playWordAudio(wordId, text, langCode, fileOnly = false) {
     const url = referenceAudioUrl(wordId, langCode);
     if (url) {
       try { await playFile(url); return; }
-      catch (e) { console.warn(`[playWordAudio] no reference audio for ${wordId}; using TTS`); }
+      catch (e) { console.warn(`[playWordAudio] no reference audio for ${wordId}${fileOnly ? "" : "; using TTS"}`); }
     }
-    await playTTS(text, langCode);
+    if (!fileOnly) await playTTS(text, langCode);
   }
 
   function cancelAudio() {
@@ -419,18 +421,22 @@
     uploadStatus.textContent = "";
     currentBlob = null;
 
-    if (mode === "full") {
-      // Developer mode: skip audio entirely (600 words → too long).
+    // Developer mode skips TTS (600 words → too slow) but still plays the
+    // reference audio file when one exists for this language.
+    const devFileOnly = mode === "full";
+    const hasPrompt   = mode !== "full" || !!REFERENCE_AUDIO[lang];
+
+    if (!hasPrompt) {
       startRecording();
     } else if (headphoneMode === "with") {
       // Record while the prompt plays.
       startRecording();
       await new Promise(r => setTimeout(r, WORD_SHOW_MS));
-      playWordAudio(wordId, text, lang);   // fire-and-forget
+      playWordAudio(wordId, text, lang, devFileOnly);   // fire-and-forget
     } else {
       // Wait for the prompt to finish, then start recording.
       await new Promise(r => setTimeout(r, WORD_SHOW_MS));
-      await playWordAudio(wordId, text, lang);
+      await playWordAudio(wordId, text, lang, devFileOnly);
       startRecording();
     }
   }
