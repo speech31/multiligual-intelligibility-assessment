@@ -408,10 +408,10 @@ const WORD_DATA = {
     /* set 43 */ ["gräns", "gräs", "pjäs", "halv", "valv", "krav", "värv", "kärv", "kräv", "grav", "nerv", "kalv"],
     /* set 44 */ ["not", "bård", "gård", "vård", "trut", "slut", "tjut", "hård", "nog", "skjut", "skog", "fog"],
     /* set 45 */ ["öl", "köl", "knöt", "flöt", "flit", "föl", "svält", "fjäll", "fält", "tält", "stöt", "säll"],
-    /* set 46 */ ["börs", "törs", "rörs", "stör", "nyss", "för", "kryss", "ryss", "kör", "by", "bry", "kry"],
+    /* set 46 */ ["börs", "törs", "rörs", "stör", "nyss", "för", "kryss", "ryss", "hör", "by", "bry", "kry"],
     /* set 47 */ ["ton", "zon", "zoo", "don", "ord", "bord", "jord", "bank", "blank", "ro", "rank", "mord"],
     /* set 48 */ ["besk", "träsk", "skär", "sky", "kyl", "läsk", "bär", "väl", "gräl", "själ", "själv", "kär"],
-    /* set 49 */ ["bön", "kön", "frän", "kråm", "kräm", "skänk", "län", "sänk", "hän", "bänk", "kräk", "lön"],
+    /* set 49 */ ["bön", "länk", "frän", "kråm", "kräm", "skänk", "län", "sänk", "hän", "bänk", "kräk", "lön"],
     /* set 50 */ ["kiosk", "mitt", "mått", "påsk", "käpp", "lapp", "skepp", "skott", "smått", "mätt", "lopp", "läpp"]
   ],
 

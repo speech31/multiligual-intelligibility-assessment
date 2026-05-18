@@ -339,6 +339,11 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
   text-align: center;
 }
 
+:fullscreen #recording-section .word-display.has-reading,
+:-webkit-full-screen #recording-section .word-display.has-reading {
+  font-size: clamp(4.5rem, 12vw, 11rem);
+}
+
 .shortcut-hint {
   text-align: center;
   font-size: 0.82rem;
@@ -387,6 +392,17 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
   margin: 1.5rem 0;
   letter-spacing: 0.05em;
   min-height: 4rem;
+}
+
+/* Japanese: kanji + hiragana reading on two lines. Sized down a little so
+   the stacked pair doesn't overflow. */
+.word-display.has-reading {
+  font-size: 2.5rem;
+}
+
+.word-display .word-reading {
+  font-size: 0.78em;
+  font-weight: 500;
 }
 
 .recorder-controls {

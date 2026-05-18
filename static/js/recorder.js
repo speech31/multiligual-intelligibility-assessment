@@ -270,6 +270,7 @@
     el: { dir: "CHMIT-Greek",   subdir: true,  case: "lower" },
     es: { dir: "CHMIT-Spanish", subdir: true,  case: "lower" },
     ru: { dir: "CHMIT-Russian", subdir: false, case: "lower" },
+    sv: { dir: "CHMIT-Swedish", subdir: false, case: "lower" },
   };
 
   function referenceAudioUrl(wordId, langCode) {
@@ -409,15 +410,31 @@
 
   function blankWord() {
     wordDisplay.textContent = "";
+    wordDisplay.classList.remove("has-reading");
     modeInstruction.textContent = "";
   }
 
   async function showAndRecord(idx) {
     wordIndexEl.textContent = idx + 1;
     const wordId = words[idx];
-    // Japanese is stored as "kanji|reading"; getCanonical returns kanji only.
-    const text = getCanonical(wordId, lang);
-    wordDisplay.textContent = text;
+    // Japanese is stored as "kanji|reading"; show both on two lines when a
+    // reading exists. `text` (kanji only) is what we hand to TTS.
+    const { main, reading } = getWordParts(wordId, lang);
+    const text = main;
+    if (reading) {
+      wordDisplay.textContent = "";
+      const mainEl = document.createElement("div");
+      mainEl.className = "word-main";
+      mainEl.textContent = main;
+      const readingEl = document.createElement("div");
+      readingEl.className = "word-reading";
+      readingEl.textContent = reading;
+      wordDisplay.append(mainEl, readingEl);
+      wordDisplay.classList.add("has-reading");
+    } else {
+      wordDisplay.textContent = text;
+      wordDisplay.classList.remove("has-reading");
+    }
     uploadStatus.textContent = "";
     currentBlob = null;
 
