@@ -1,8 +1,10 @@
 /**
  * recorder.js — Recording mode (pure client-side, keyboard-driven).
  *
- * Flow: each word is shown after a brief silence, and recording begins the
- * moment the word appears. Only shortcut keys control progression:
+ * Flow: the very first word is shown with a "Start recording" button and waits
+ * for the user to click it (the button stays visible in fullscreen). After that,
+ * each word is shown after a brief silence and recording begins the moment the
+ * word appears. Only shortcut keys control progression:
  *   x      — stop, save WAV, advance to next word
  *   z      — stop, go back to the previous word (next save overwrites)
  *   c      — stop, discard, re-record the same word
@@ -210,6 +212,7 @@
 
   const fullscreenBtn  = document.getElementById("fullscreen-btn");
   const saveZipNowBtn  = document.getElementById("save-zip-now-btn");
+  const beginRecordBtn = document.getElementById("begin-record-btn");
 
   const doneSection    = document.getElementById("done-section");
   const doneTitle      = document.getElementById("done-title");
@@ -244,6 +247,7 @@
   let chunks        = [];
   let currentBlob   = null;
   let busy          = false;
+  let awaitingFirstStart = false;   // first-word gate: waiting for "Start recording" click
 
   // ----- Helpers -----
   function showError(el, msg) { el.textContent = msg; el.classList.remove("hidden"); }
@@ -415,13 +419,14 @@
     modeInstruction.textContent = "";
   }
 
-  async function showAndRecord(idx) {
+  // Paint the word on screen (no recording). Split out of showAndRecord so the
+  // first-word start gate can display the word while waiting for the click.
+  function renderWord(idx) {
     wordIndexEl.textContent = idx + 1;
     const wordId = words[idx];
     // Japanese is stored as "kanji|reading"; show both on two lines when a
-    // reading exists. `text` (kanji only) is what we hand to TTS.
+    // reading exists.
     const { main, reading } = getWordParts(wordId, lang);
-    const text = main;
     if (reading) {
       wordDisplay.textContent = "";
       const mainEl = document.createElement("div");
@@ -433,11 +438,17 @@
       wordDisplay.append(mainEl, readingEl);
       wordDisplay.classList.add("has-reading");
     } else {
-      wordDisplay.textContent = text;
+      wordDisplay.textContent = main;
       wordDisplay.classList.remove("has-reading");
     }
     uploadStatus.textContent = "";
     currentBlob = null;
+  }
+
+  async function showAndRecord(idx) {
+    renderWord(idx);
+    const wordId = words[idx];
+    const text = getWordParts(wordId, lang).main;   // kanji only is what TTS gets
 
     // Developer mode skips TTS (600 words → too slow) but still plays the
     // reference audio file when one exists for this language.
@@ -726,12 +737,24 @@
     if (saveZipNowBtn) saveZipNowBtn.classList.toggle("hidden", !ZIP_FALLBACK);
 
     currentIdx = 0;
-    blankWord();
-    wordIndexEl.textContent = 1;
+    // First word does not auto-start: show it and wait for the "Start recording"
+    // click. Keep `busy` true so the x/z/c/space shortcuts stay inert until the
+    // first take begins (fullscreen toggle still works — it ignores `busy`).
     busy = true;
+    awaitingFirstStart = true;
+    renderWord(0);
+    beginRecordBtn?.classList.remove("hidden");
+    beginRecordBtn?.focus();
+  });
+
+  // First-word start gate: begin the first recording only when clicked.
+  beginRecordBtn?.addEventListener("click", async () => {
+    if (!awaitingFirstStart) return;
+    awaitingFirstStart = false;
+    beginRecordBtn.classList.add("hidden");
     try {
       await new Promise(r => setTimeout(r, LEAD_IN_MS));
-      await showAndRecord(0);
+      await showAndRecord(currentIdx);
     } finally { busy = false; }
   });
 

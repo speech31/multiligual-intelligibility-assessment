@@ -344,6 +344,26 @@ p { line-height: 1.6; margin-bottom: 0.75rem; }
   font-size: clamp(4.5rem, 12vw, 11rem);
 }
 
+/* First-word start gate button. Centered under the word in normal view; in
+   fullscreen everything except the word is hidden, so re-show this button and
+   pin it near the bottom so the user can still start the first recording. */
+.begin-record-btn {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.6rem 1.6rem;
+  font-size: 1rem;
+}
+
+:fullscreen #recording-section #begin-record-btn:not(.hidden),
+:-webkit-full-screen #recording-section #begin-record-btn:not(.hidden) {
+  display: block;
+  position: fixed;
+  left: 50%;
+  bottom: 10vh;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
 .shortcut-hint {
   text-align: center;
   font-size: 0.82rem;
