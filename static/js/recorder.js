@@ -283,16 +283,11 @@
     if (!cfg) return null;
     const word = getCanonical(wordId, langCode);
     if (!word || word === wordId) return null;
-    const m = /^set(\d+)_col(\d+)$/.exec(wordId);
+    const m = /^set(\d+)_col\d+$/.exec(wordId);
     if (!m) return null;
     const setNum = parseInt(m[1], 10);
-    let colNum   = parseInt(m[2], 10);
-    // Danish repeats col01's word as col13 (the PDF's row anchor), so no
-    // separate recording exists — reuse col01's file for that cell.
-    if (langCode === "da" && colNum === 13) colNum = 1;
-    const audioId  = `set${String(setNum).padStart(2, "0")}_col${String(colNum).padStart(2, "0")}`;
     const wordPart = cfg.case === "upper" ? word.toUpperCase() : word.toLowerCase();
-    const fileName = `${audioId}_${wordPart}.wav`;
+    const fileName = `${wordId}_${wordPart}.wav`;
     const segments = cfg.subdir
       ? ["data", cfg.dir, `List ${setNum}`, fileName]
       : ["data", cfg.dir, fileName];
